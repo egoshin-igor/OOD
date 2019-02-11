@@ -2,7 +2,7 @@
 
 namespace SimUDuckFunctionally.Ducks
 {
-    internal class Duck
+    internal abstract class Duck
     {
         private Action _fly;
         private Action _quack;
@@ -40,9 +40,6 @@ namespace SimUDuckFunctionally.Ducks
             _fly = fly;
         }
 
-        public virtual void Display()
-        {
-            Console.WriteLine( "Dispaly duck" );
-        }
+        public abstract void Display();
     }
 }

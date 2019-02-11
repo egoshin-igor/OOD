@@ -4,9 +4,15 @@ namespace SimUDuckFunctionally.Behaviours
 {
     internal static class FlyBehaviour
     {
-        public static void FlyWithWings()
+        public static Action FlyWithWings()
         {
-            Console.WriteLine( $"I fly with wings" );
+            int flightsAmount = 1;
+            void fly()
+            {
+                Console.WriteLine( $"I fly with wings. Flight number:{flightsAmount}" );
+                ++flightsAmount;
+            }
+            return fly;
         }
 
         public static void FlyNoWay()

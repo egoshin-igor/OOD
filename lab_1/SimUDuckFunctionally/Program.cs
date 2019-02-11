@@ -1,4 +1,5 @@
 ﻿using System;
+using SimUDuckFunctionally.Behaviours;
 using SimUDuckFunctionally.Ducks;
 
 namespace SimUDuckFunctionally
@@ -11,10 +12,12 @@ namespace SimUDuckFunctionally
             SimulateDuck( new RedHeadDuck() );
             SimulateDuck( new RubberDuck() );
             SimulateDuck( new DecoyDuck() );
+            SimulateDuck( new ModelDuck() );
 
             Duck duck = new MallardDuck();
             duck.Fly();
-            duck.SetFlight( () => { Console.WriteLine( "I fly on rocket!!!" ); } );
+            duck.Fly();
+            duck.SetFlight( FlyBehaviour.FlyWithWings() );
             duck.Fly();
         }
 

@@ -6,7 +6,7 @@ namespace SimUDuckFunctionally.Ducks
     internal class RedHeadDuck : Duck
     {
         public RedHeadDuck()
-            : base( FlyBehaviour.FlyWithWings, QuackBehaviour.Quack, DanceBehaviour.Manuette )
+            : base( FlyBehaviour.FlyWithWings(), QuackBehaviour.Quack, DanceBehaviour.Manuette )
         {
         }
 
