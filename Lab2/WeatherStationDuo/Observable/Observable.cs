@@ -10,10 +10,9 @@ namespace WeatherStationDuo.Observable
 
         public void RegisterObserver( IObserver<T> observer, int priority = 0 )
         {
-            if ( !_observers.Any( o => o.Observer == observer ) )
-            {
-                _observers.Add( new PriorityObserver( observer, priority ) );
-            }
+            RemoveObserver( observer );
+
+            _observers.Add( new PriorityObserver( observer, priority ) );
         }
 
         public void NotifyObservers()
@@ -46,7 +45,6 @@ namespace WeatherStationDuo.Observable
             }
         }
 
-
         private class PriorityObserverComparer : IComparer<PriorityObserver>
         {
             public int Compare( PriorityObserver first, PriorityObserver second )
@@ -65,6 +63,5 @@ namespace WeatherStationDuo.Observable
                 return priorityDifference;
             }
         }
-
     }
 }

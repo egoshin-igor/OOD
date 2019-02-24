@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using WeatherStation.Observable;
 
 
@@ -6,54 +7,70 @@ namespace WeatherStation.Observer
 {
     public class StatsDisplay : IObserver<WeatherInfo>
     {
-        private MeasurementStatisticInfo _temperatureStatistic = new MeasurementStatisticInfo( "Temperature" );
-        private MeasurementStatisticInfo _humidityStatistic = new MeasurementStatisticInfo( "Humidity" );
-        private MeasurementStatisticInfo _pressureStatistic = new MeasurementStatisticInfo( "Pressure" );
+        private readonly List<MeasurementStatisticPrinter> _printers = new List<MeasurementStatisticPrinter>
+        {
+            new MeasurementStatisticPrinter("Temperature", wi => wi.Temperature),
+            new MeasurementStatisticPrinter("Humidity", wi => wi.Temperature),
+            new MeasurementStatisticPrinter("Pressure", wi => wi.Pressure),
+            new MeasurementStatisticPrinter("Wind speed", wi => wi.WindInfo?.WindSpeed ?? 0 ),
+            new WindDirectionStatisticPrinter("Wind direction", wi => wi.WindInfo?.WindDirection ?? 0 )
+        };
 
         public void Update( WeatherInfo data )
         {
-            _temperatureStatistic.UpdateStatistic( data.Temperature );
-            _humidityStatistic.UpdateStatistic( data.Humidity );
-            _pressureStatistic.UpdateStatistic( data.Pressure );
+            UpdateWeatherStatistic( data );
+            PrintWeatherStatistic();
+        }
+
+        private void UpdateWeatherStatistic( WeatherInfo data )
+        {
+            foreach ( MeasurementStatisticPrinter printer in _printers )
+            {
+                printer.UpdateStatistic( data );
+            }
+        }
+
+        private void PrintWeatherStatistic()
+        {
+            foreach ( MeasurementStatisticPrinter printer in _printers )
+            {
+                printer.PrintStatistic();
+            }
             Console.WriteLine( "-----------------------" );
         }
 
-        private class MeasurementStatisticInfo
+        private class MeasurementStatisticPrinter
         {
-            private readonly string _name;
-            private double _maxMeasurement = double.NegativeInfinity;
-            private double _minMeasurement = double.PositiveInfinity;
-            private double _measurementsSum = 0;
-            private uint _updatesCount = 0;
+            readonly Func<WeatherInfo, double> _extractor;
+            protected IMeasurementStatisticInfo _info = new BaseMeasurementStatisticInfo();
+            readonly string _name;
 
-            public MeasurementStatisticInfo( string name )
+            public MeasurementStatisticPrinter( string name, Func<WeatherInfo, double> extractor )
             {
                 _name = name;
+                _extractor = extractor;
             }
 
-            public void UpdateStatistic( double measurement )
+            public void UpdateStatistic( WeatherInfo data )
             {
-                if ( _minMeasurement > measurement )
-                {
-                    _minMeasurement = measurement;
-                }
-                if ( _maxMeasurement < measurement )
-                {
-                    _maxMeasurement = measurement;
-                }
+                _info.UpdateStatistic( _extractor( data ) );
+            }
 
-                _measurementsSum += measurement;
-                ++_updatesCount;
-
-                Console.WriteLine( $"Max {_name} {_maxMeasurement}" );
-                Console.WriteLine( $"Min {_name} {_minMeasurement}" );
-                Console.WriteLine( $"Average {_name} {( GetAverageMeasurement() )}" );
+            public void PrintStatistic()
+            {
+                Console.WriteLine( $"Max {_name} {_info.MaxMeasurement}" );
+                Console.WriteLine( $"Min {_name} {_info.MinMeasurement}" );
+                Console.WriteLine( $"Average {_name} {( Math.Round( _info.AverageMeasurement.Value, 2 ) )}" );
                 Console.WriteLine();
             }
+        }
 
-            private double GetAverageMeasurement()
+        private class WindDirectionStatisticPrinter : MeasurementStatisticPrinter
+        {
+            public WindDirectionStatisticPrinter( string name, Func<WeatherInfo, double> extractor )
+                : base( name, extractor )
             {
-                return _measurementsSum / _updatesCount;
+                _info = new WindDirectionStatisticInfo();
             }
         }
     }

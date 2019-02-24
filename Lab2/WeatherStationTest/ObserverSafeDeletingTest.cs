@@ -15,20 +15,12 @@ namespace WeatherStationTest
             var testObserver = new TestObserver( wd );
             wd.RegisterObserver( display );
             wd.RegisterObserver( testObserver );
-            var isWeatherInfoCorrectlyUpdated = true;
 
             // act
-            try
-            {
-                wd.UpdateWeatherInfo( new WeatherInfo( 1, 1, 1 ) );
-            }
-            catch
-            {
-                isWeatherInfoCorrectlyUpdated = false;
-            }
+            var ex = Record.Exception( () => wd.UpdateWeatherInfo( 1, 1, 1, 1, 1 ) );
 
             // assert
-            Assert.True( isWeatherInfoCorrectlyUpdated );
+            Assert.Null( ex );
         }
 
 

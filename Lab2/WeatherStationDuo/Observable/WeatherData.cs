@@ -3,21 +3,15 @@
     public class WeatherData : Observable<WeatherInfo>
     {
         public WeatherInfo WeatherInfo { get; protected set; }
-        public WeatherStationLocation Location { get; protected set; }
-
-        public WeatherData( WeatherStationLocation location )
-        {
-            Location = location;
-        }
 
         public void MeasurementsChanged()
         {
             NotifyObservers();
         }
 
-        public void UpdateWeatherInfo( WeatherInfo weatherInfo )
+        public void UpdateWeatherInfo( double temperature, double humidity, double pressure )
         {
-            WeatherInfo = weatherInfo;
+            WeatherInfo = new WeatherInfo( temperature, humidity, pressure );
 
             MeasurementsChanged();
         }

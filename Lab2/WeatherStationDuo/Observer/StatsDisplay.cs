@@ -1,91 +1,109 @@
 ﻿using System;
+using System.Collections.Generic;
 using WeatherStationDuo.Observable;
 
 namespace WeatherStationDuo.Observer
 {
     public class StatsDisplay : IObserver<WeatherInfo>
     {
-        private MeasurementStatisticInfoDuo _temperatureStatisticIn = new MeasurementStatisticInfoDuo( "Temperature" );
-        private MeasurementStatisticInfoDuo _humidityStatisticIn = new MeasurementStatisticInfoDuo( "Humidity" );
-        private MeasurementStatisticInfoDuo _pressureStatisticIn = new MeasurementStatisticInfoDuo( "Pressure" );
-
-        public void Update( Observable.IObservable<WeatherInfo> subject, WeatherInfo data )
+        private readonly List<MeasurementStatisticPrinterDuo> _printers = new List<MeasurementStatisticPrinterDuo>
         {
-            var wd = subject as WeatherData;
-            if ( wd == null )
+            new MeasurementStatisticPrinterDuo("Temperature", wi => wi.Temperature),
+            new MeasurementStatisticPrinterDuo("Humidity", wi => wi.Temperature),
+            new MeasurementStatisticPrinterDuo("Pressure", wi => wi.Pressure)
+        };
+
+        private readonly MeasurementStatisticPrinterDuo _windSpeedPrinter =
+            new MeasurementStatisticPrinterDuo( "Wind speed", wi => wi.WindInfo?.WindSpeed ?? 0 );
+        private readonly WindDirectionStatisticPrinterDuo _windDirectionPrinter =
+            new WindDirectionStatisticPrinterDuo( "Wind direction", wi => wi.WindInfo?.WindDirection ?? 0 );
+
+        private Observable.IObservable<WeatherInfo> _subjectInBuilding;
+        private Observable.IObservable<WeatherInfo> _subjectOutBuilding;
+
+        public StatsDisplay( Observable<WeatherInfo> inSubject, Observable<WeatherInfo> outSubject )
+        {
+            _subjectInBuilding = inSubject;
+            _subjectOutBuilding = outSubject;
+            _subjectInBuilding.RegisterObserver( this );
+            _subjectOutBuilding.RegisterObserver( this );
+        }
+
+        public virtual void Update( Observable.IObservable<WeatherInfo> subject, WeatherInfo data )
+        {
+            WeatherStationLocation location;
+            if ( subject == _subjectInBuilding )
             {
-                throw new ApplicationException( "Stats display can work only with weather station" );
+                location = WeatherStationLocation.In;
+            }
+            else if ( subject == _subjectOutBuilding )
+            {
+                location = WeatherStationLocation.Out;
+            }
+            else
+            {
+                throw new ApplicationException( "Weather station is undefined" );
             }
 
-            _temperatureStatisticIn.UpdateStatistic( wd.Location, data.Temperature );
-            _humidityStatisticIn.UpdateStatistic( wd.Location, data.Humidity );
-            _pressureStatisticIn.UpdateStatistic( wd.Location, data.Pressure );
+            foreach ( MeasurementStatisticPrinterDuo printer in _printers )
+            {
+                printer.UpdateStatistic( location, data );
+            }
+
+            if ( data.WindInfo != null )
+            {
+                _windSpeedPrinter.UpdateStatistic( location, data );
+                _windDirectionPrinter.UpdateStatistic( location, data );
+            }
+
             Console.WriteLine( "-----------------------" );
         }
 
-        private class MeasurementStatisticInfoDuo
+        private class MeasurementStatisticPrinterDuo
         {
-            private MeasurementStatisticInfo _inBuilding;
-            private MeasurementStatisticInfo _outBuilding;
+            readonly Func<WeatherInfo, double> _extractor;
+            protected IMeasurementStatisticInfo _statisticInBuilding = new BaseMeasurementStatisticInfo();
+            protected IMeasurementStatisticInfo _statisticOutBuilding = new BaseMeasurementStatisticInfo();
+            readonly string _name;
 
-            public MeasurementStatisticInfoDuo( string name )
+            public MeasurementStatisticPrinterDuo( string name, Func<WeatherInfo, double> extractor )
             {
-                _inBuilding = new MeasurementStatisticInfo( name );
-                _outBuilding = new MeasurementStatisticInfo( name );
+                _name = name;
+                _extractor = extractor;
             }
 
-            public void UpdateStatistic( WeatherStationLocation location, double measurement )
+            public void UpdateStatistic( WeatherStationLocation location, WeatherInfo data )
             {
-
                 if ( location == WeatherStationLocation.In )
                 {
-                    Console.WriteLine( "Location: in building" );
-                    _inBuilding.UpdateStatistic( measurement );
+                    _statisticInBuilding.UpdateStatistic( _extractor( data ) );
+                    Console.WriteLine( $"Location: in building" );
+                    PrintStatistic( _statisticInBuilding );
                 }
                 else
                 {
-                    Console.WriteLine( "Location: out building" );
-                    _outBuilding.UpdateStatistic( measurement );
+                    _statisticOutBuilding.UpdateStatistic( _extractor( data ) );
+                    Console.WriteLine( $"Location: out building" );
+                    PrintStatistic( _statisticOutBuilding );
                 }
+            }
+
+            private void PrintStatistic( IMeasurementStatisticInfo statisticInfo )
+            {
+                Console.WriteLine( $"Max {_name} {statisticInfo.MaxMeasurement}" );
+                Console.WriteLine( $"Min {_name} {statisticInfo.MinMeasurement}" );
+                Console.WriteLine( $"Average {_name} {( Math.Round( statisticInfo.AverageMeasurement.Value, 2 ) )}" );
+                Console.WriteLine();
             }
         }
 
-        private class MeasurementStatisticInfo
+        private class WindDirectionStatisticPrinterDuo : MeasurementStatisticPrinterDuo
         {
-            private string _name;
-            private double _maxMeasurement = double.NegativeInfinity;
-            private double _minMeasurement = double.PositiveInfinity;
-            private double _measurementsSum = 0;
-            private uint _updatesCount = 0;
-
-            public MeasurementStatisticInfo( string name )
+            public WindDirectionStatisticPrinterDuo( string name, Func<WeatherInfo, double> extractor )
+                : base( name, extractor )
             {
-                _name = name;
-            }
-
-            public void UpdateStatistic( double measurement )
-            {
-                if ( _minMeasurement > measurement )
-                {
-                    _minMeasurement = measurement;
-                }
-                if ( _maxMeasurement < measurement )
-                {
-                    _maxMeasurement = measurement;
-                }
-
-                _measurementsSum += measurement;
-                ++_updatesCount;
-
-                Console.WriteLine( $"Max {_name} {_maxMeasurement}" );
-                Console.WriteLine( $"Min {_name} {_minMeasurement}" );
-                Console.WriteLine( $"Average {_name} {( GetAverageMeasurement() )}" );
-                Console.WriteLine();
-            }
-
-            private double GetAverageMeasurement()
-            {
-                return _measurementsSum / _updatesCount;
+                _statisticInBuilding = new WindDirectionStatisticInfo();
+                _statisticOutBuilding = new WindDirectionStatisticInfo();
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using WeatherStationDuo.Observable;
+﻿using WeatherStationDuo.Observable;
 using WeatherStationDuo.Observer;
 
 namespace WeatherStationDuo
@@ -8,22 +7,19 @@ namespace WeatherStationDuo
     {
         static void Main( string[] args )
         {
-            var wdIn = new WeatherData( WeatherStationLocation.In );
-            var wdOut = new WeatherData( WeatherStationLocation.Out );
+            var wdIn = new WeatherData();
+            var wdOut = new WeatherDataPro();
 
-            var display = new Display();
-            wdIn.RegisterObserver( display, priority: 3 );
+            var display = new Display( wdIn, wdOut );
+            var statsDisplay = new StatsDisplay( wdIn, wdOut );
 
-            var statsDisplay = new StatsDisplay();
-            wdIn.RegisterObserver( statsDisplay, priority: 4 );
-            wdOut.RegisterObserver( statsDisplay, priority: 4 );
-
-            wdIn.UpdateWeatherInfo( new WeatherInfo( 3, 0.7, 760 ) );
-            wdOut.UpdateWeatherInfo( new WeatherInfo( 4, 0.8, 761 ) );
+            wdIn.UpdateWeatherInfo( 3, 0.7, 760 );
+            wdIn.UpdateWeatherInfo( 4, 0.8, 761 );
+            wdOut.UpdateWeatherInfo( 4, 0.8, 761, 10, 10 );
 
             wdIn.RemoveObserver( statsDisplay );
-            wdIn.UpdateWeatherInfo( new WeatherInfo( 10, 0.8, 761 ) );
-            wdOut.UpdateWeatherInfo( new WeatherInfo( -10, 0.8, 761 ) );
+            wdOut.RemoveObserver( statsDisplay );
+            wdIn.UpdateWeatherInfo( 10, 0.8, 761 );
         }
     }
 }

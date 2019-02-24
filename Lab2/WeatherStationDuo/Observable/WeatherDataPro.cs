@@ -1,6 +1,6 @@
-﻿namespace WeatherStation.Observable
+﻿namespace WeatherStationDuo.Observable
 {
-    public class WeatherData : Observable<WeatherInfo>
+    public class WeatherDataPro : Observable<WeatherInfo>
     {
         public WeatherInfo WeatherInfo { get; protected set; }
 

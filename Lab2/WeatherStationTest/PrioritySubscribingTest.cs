@@ -34,7 +34,7 @@ namespace WeatherStationTest
             wd.RegisterObserver( secondObserver.Object, secondObserverPriority );
 
             // act
-            wd.UpdateWeatherInfo( new WeatherInfo( 1, 1, 1 ) );
+            wd.UpdateWeatherInfo( 1, 1, 1, 1, 1 );
 
             // assert
             Assert.Equal( isFirstObserverHasHigherPriority, UpdatedTimeByFirstObserver < UpdatedTimeBySecondObserver );
