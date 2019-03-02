@@ -9,7 +9,7 @@ namespace WeatherStation.Observable
         public double Pressure { get; protected set; }
         public WindInfo WindInfo { get; protected set; }
 
-        public WeatherInfo( double temperature, double humidity, double pressure, WindInfo windInfo )
+        public WeatherInfo( double temperature, double humidity, double pressure, WindInfo windInfo = null )
         {
             Temperature = temperature;
             Humidity = humidity;
@@ -19,13 +19,12 @@ namespace WeatherStation.Observable
 
         public override bool Equals( object obj )
         {
-            var info = obj as WeatherInfo;
-            if ( info == null )
+            if ( obj is WeatherInfo )
             {
-                return false;
+                return Equals( obj );
             }
 
-            return Equals( obj );
+            return false;
         }
 
         public bool Equals( WeatherInfo other )
@@ -44,11 +43,6 @@ namespace WeatherStation.Observable
 
         public static bool operator ==( WeatherInfo first, WeatherInfo second )
         {
-            if ( first == null )
-            {
-                return false;
-            }
-
             return first.Equals( second );
         }
 

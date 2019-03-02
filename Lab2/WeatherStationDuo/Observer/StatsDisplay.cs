@@ -13,10 +13,8 @@ namespace WeatherStationDuo.Observer
             new MeasurementStatisticPrinterDuo("Pressure", wi => wi.Pressure)
         };
 
-        private readonly MeasurementStatisticPrinterDuo _windSpeedPrinter =
-            new MeasurementStatisticPrinterDuo( "Wind speed", wi => wi.WindInfo?.WindSpeed ?? 0 );
-        private readonly WindDirectionStatisticPrinterDuo _windDirectionPrinter =
-            new WindDirectionStatisticPrinterDuo( "Wind direction", wi => wi.WindInfo?.WindDirection ?? 0 );
+        private readonly MeasurementStatisticPrinterDuo _windSpeedPrinter;
+        private readonly WindDirectionStatisticPrinterDuo _windDirectionPrinter;
 
         private Observable.IObservable<WeatherInfo> _subjectInBuilding;
         private Observable.IObservable<WeatherInfo> _subjectOutBuilding;
@@ -27,6 +25,9 @@ namespace WeatherStationDuo.Observer
             _subjectOutBuilding = outSubject;
             _subjectInBuilding.RegisterObserver( this );
             _subjectOutBuilding.RegisterObserver( this );
+
+            _windDirectionPrinter = new WindDirectionStatisticPrinterDuo( "Wind direction" );
+            _windSpeedPrinter = new MeasurementStatisticPrinterDuo( "Wind speed", wi => wi.WindInfo.WindSpeed );
         }
 
         public virtual void Update( Observable.IObservable<WeatherInfo> subject, WeatherInfo data )
@@ -53,7 +54,7 @@ namespace WeatherStationDuo.Observer
             if ( data.WindInfo != null )
             {
                 _windSpeedPrinter.UpdateStatistic( location, data );
-                _windDirectionPrinter.UpdateStatistic( location, data );
+                _windDirectionPrinter.UpdateStatistic( location, data.WindInfo );
             }
 
             Console.WriteLine( "-----------------------" );
@@ -61,10 +62,10 @@ namespace WeatherStationDuo.Observer
 
         private class MeasurementStatisticPrinterDuo
         {
-            readonly Func<WeatherInfo, double> _extractor;
-            protected IMeasurementStatisticInfo _statisticInBuilding = new BaseMeasurementStatisticInfo();
-            protected IMeasurementStatisticInfo _statisticOutBuilding = new BaseMeasurementStatisticInfo();
-            readonly string _name;
+            private readonly Func<WeatherInfo, double> _extractor;
+            private IMeasurementStatisticInfo _statisticInBuilding = new BaseMeasurementStatisticInfo();
+            private IMeasurementStatisticInfo _statisticOutBuilding = new BaseMeasurementStatisticInfo();
+            private readonly string _name;
 
             public MeasurementStatisticPrinterDuo( string name, Func<WeatherInfo, double> extractor )
             {
@@ -97,13 +98,46 @@ namespace WeatherStationDuo.Observer
             }
         }
 
-        private class WindDirectionStatisticPrinterDuo : MeasurementStatisticPrinterDuo
+        private class WindDirectionStatisticPrinterDuo
         {
-            public WindDirectionStatisticPrinterDuo( string name, Func<WeatherInfo, double> extractor )
-                : base( name, extractor )
+            private WindDirectionStatisticInfo _statisticInBuilding = new WindDirectionStatisticInfo();
+            private WindDirectionStatisticInfo _statisticOutBuilding = new WindDirectionStatisticInfo();
+            private readonly string _name;
+
+            public WindDirectionStatisticPrinterDuo( string name )
             {
-                _statisticInBuilding = new WindDirectionStatisticInfo();
-                _statisticOutBuilding = new WindDirectionStatisticInfo();
+                _name = name;
+            }
+
+            public void UpdateStatistic( WeatherStationLocation location, WindInfo data )
+            {
+                if ( location == WeatherStationLocation.In )
+                {
+                    _statisticInBuilding.UpdateStatistic( data );
+                    Console.WriteLine( $"Location: in building" );
+                    PrintStatistic( _statisticInBuilding );
+                }
+                else
+                {
+                    _statisticOutBuilding.UpdateStatistic( data );
+                    Console.WriteLine( $"Location: out building" );
+                    PrintStatistic( _statisticOutBuilding );
+                }
+            }
+
+            private void PrintStatistic( WindDirectionStatisticInfo statisticInfo )
+            {
+                Console.Write( $"Average {_name} " );
+                if ( statisticInfo.AverageMeasurement != null )
+                {
+                    Console.WriteLine( Math.Round( statisticInfo.AverageMeasurement.Value, 2 ) );
+                }
+                else
+                {
+                    Console.WriteLine( "is undefined" );
+                }
+
+                Console.WriteLine();
             }
         }
     }

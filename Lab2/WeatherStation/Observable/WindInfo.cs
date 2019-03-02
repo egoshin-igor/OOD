@@ -15,13 +15,12 @@ namespace WeatherStation.Observable
 
         public override bool Equals( object obj )
         {
-            var info = obj as WindInfo;
-            if ( info == null )
+            if ( obj is WindInfo )
             {
-                return false;
+                return Equals( obj );
             }
 
-            return Equals( obj );
+            return false;
         }
 
         public bool Equals( WindInfo other )
@@ -38,7 +37,7 @@ namespace WeatherStation.Observable
 
         public static bool operator ==( WindInfo first, WindInfo second )
         {
-            if ( first == null )
+            if ( first is null )
             {
                 return false;
             }
@@ -48,6 +47,11 @@ namespace WeatherStation.Observable
 
         public static bool operator !=( WindInfo first, WindInfo second )
         {
+            if ( first is null )
+            {
+                return false;
+            }
+
             return !( first == second );
         }
     }

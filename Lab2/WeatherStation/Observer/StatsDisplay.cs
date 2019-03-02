@@ -9,12 +9,18 @@ namespace WeatherStation.Observer
     {
         private readonly List<MeasurementStatisticPrinter> _printers = new List<MeasurementStatisticPrinter>
         {
-            new MeasurementStatisticPrinter("Temperature", wi => wi.Temperature),
-            new MeasurementStatisticPrinter("Humidity", wi => wi.Temperature),
-            new MeasurementStatisticPrinter("Pressure", wi => wi.Pressure),
-            new MeasurementStatisticPrinter("Wind speed", wi => wi.WindInfo?.WindSpeed ?? 0 ),
-            new WindDirectionStatisticPrinter("Wind direction", wi => wi.WindInfo?.WindDirection ?? 0 )
+            new MeasurementStatisticPrinter( "Temperature", wi => wi.Temperature),
+            new MeasurementStatisticPrinter( "Humidity", wi => wi.Humidity),
+            new MeasurementStatisticPrinter( "Pressure", wi => wi.Pressure),
+            new MeasurementStatisticPrinter( "Wind speed", wi => wi.WindInfo.WindSpeed )
         };
+
+        private WindDirectionStatisticPrinter _windDirectionPrinter;
+
+        public StatsDisplay()
+        {
+            _windDirectionPrinter = new WindDirectionStatisticPrinter( "Wind direction" );
+        }
 
         public void Update( WeatherInfo data )
         {
@@ -28,6 +34,8 @@ namespace WeatherStation.Observer
             {
                 printer.UpdateStatistic( data );
             }
+
+            _windDirectionPrinter.UpdateStatistic( data.WindInfo );
         }
 
         private void PrintWeatherStatistic()
@@ -36,14 +44,16 @@ namespace WeatherStation.Observer
             {
                 printer.PrintStatistic();
             }
+
+            _windDirectionPrinter.PrintStatistic();
             Console.WriteLine( "-----------------------" );
         }
 
         private class MeasurementStatisticPrinter
         {
-            readonly Func<WeatherInfo, double> _extractor;
-            protected IMeasurementStatisticInfo _info = new BaseMeasurementStatisticInfo();
-            readonly string _name;
+            private readonly Func<WeatherInfo, double> _extractor;
+            private IMeasurementStatisticInfo _info = new BaseMeasurementStatisticInfo();
+            private readonly string _name;
 
             public MeasurementStatisticPrinter( string name, Func<WeatherInfo, double> extractor )
             {
@@ -65,12 +75,34 @@ namespace WeatherStation.Observer
             }
         }
 
-        private class WindDirectionStatisticPrinter : MeasurementStatisticPrinter
+        private class WindDirectionStatisticPrinter
         {
-            public WindDirectionStatisticPrinter( string name, Func<WeatherInfo, double> extractor )
-                : base( name, extractor )
+            private WindDirectionStatisticInfo _info = new WindDirectionStatisticInfo();
+            private readonly string _name;
+
+            public WindDirectionStatisticPrinter( string name )
             {
-                _info = new WindDirectionStatisticInfo();
+                _name = name;
+            }
+
+            public void UpdateStatistic( WindInfo data )
+            {
+                _info.UpdateStatistic( data );
+            }
+
+            public void PrintStatistic()
+            {
+                Console.Write( $"Average {_name} " );
+                if ( _info.AverageMeasurement != null )
+                {
+                    Console.WriteLine( Math.Round( _info.AverageMeasurement.Value, 2 ) );
+                }
+                else
+                {
+                    Console.WriteLine( "is undefined" );
+                }
+
+                Console.WriteLine();
             }
         }
     }

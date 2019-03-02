@@ -15,7 +15,8 @@ namespace WeatherStationDuo
 
             wdIn.UpdateWeatherInfo( 3, 0.7, 760 );
             wdIn.UpdateWeatherInfo( 4, 0.8, 761 );
-            wdOut.UpdateWeatherInfo( 4, 0.8, 761, 10, 10 );
+            wdOut.UpdateWeatherInfo( 4, 0.8, 761, 90, 11 );
+            wdOut.UpdateWeatherInfo( 4, 0.8, 761, 270, 10 );
 
             wdIn.RemoveObserver( statsDisplay );
             wdOut.RemoveObserver( statsDisplay );
