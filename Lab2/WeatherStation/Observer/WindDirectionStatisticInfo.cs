@@ -52,7 +52,6 @@ namespace WeatherStation.Observer
                 degree += 360;
             }
 
-
             return degree.Equals( maxPossibleMeasurement ) ? 0 : degree;
         }
 
