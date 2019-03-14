@@ -14,8 +14,8 @@ namespace WeatherStation
             var statsDisplay = new StatsDisplay();
             wd.RegisterObserver( statsDisplay, priority: 4 );
 
-            wd.UpdateWeatherInfo( 3, 0.7, 760, 359, 1 );
-            wd.UpdateWeatherInfo( 4, 0.8, 761, 1, 1 );
+            wd.UpdateWeatherInfo( 3, 0.7, 760, 10, 1 );
+            wd.UpdateWeatherInfo( 4, 0.8, 761, 350, 1 );
 
             wd.RemoveObserver( statsDisplay );
             wd.UpdateWeatherInfo( 10, 0.8, 761, 135, 66 );

@@ -9,7 +9,7 @@ namespace Coffee.Beverage
         {
             [ ServingAmountType.Small ] = 50,
             [ ServingAmountType.Middle ] = 60,
-            [ ServingAmountType.Big ] = 80,
+            [ ServingAmountType.Big ] = 80
         };
 
         private readonly ServingAmountType _servingType;

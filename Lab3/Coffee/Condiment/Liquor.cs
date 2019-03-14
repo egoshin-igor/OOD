@@ -5,7 +5,6 @@ namespace Coffee.Condiment
 {
     class Liquor : CondimentDecorator
     {
-        private readonly uint _quantity;
         private readonly LiquorType _type;
 
         public Liquor( IBeverage beverage, LiquorType liquorType )
