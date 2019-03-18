@@ -2,11 +2,19 @@
 
 namespace Streams
 {
-    class Program
+    public class Program
     {
         static void Main( string[] args )
         {
-            Console.WriteLine( "Hello World!" );
+            var argumentsExecutor = new ArgumentsExecutor.ArgumentsExecutor( args );
+            try
+            {
+                argumentsExecutor.Execute();
+            }
+            catch ( ApplicationException ex )
+            {
+                Console.WriteLine( ex.Message );
+            }
         }
     }
 }

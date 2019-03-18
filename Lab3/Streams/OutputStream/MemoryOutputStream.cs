@@ -2,13 +2,13 @@
 
 namespace Streams.OutputStream
 {
-    class MemoryOutputStream : IOutputStream
+    public class MemoryOutputStream : IOutputStream
     {
-        MemoryStream _source;
+        private readonly MemoryStream _source;
 
-        public MemoryOutputStream( uint size )
+        public MemoryOutputStream( uint capacity )
         {
-            _source = new MemoryStream( ( int )size );
+            _source = new MemoryStream( ( int )capacity );
         }
 
         public MemoryOutputStream( byte[] bytes )
@@ -18,7 +18,12 @@ namespace Streams.OutputStream
 
         public void Dispose()
         {
+            Flush();
             _source.Dispose();
+        }
+
+        public void Flush()
+        {
         }
 
         public void WriteBlock( byte[] data, uint size )

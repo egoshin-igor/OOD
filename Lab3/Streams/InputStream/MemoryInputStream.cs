@@ -1,25 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace Streams.InputStream
 {
-    class MemoryInputStream : IInputStream
+    public class MemoryInputStream : IInputStream
     {
-        MemoryStream _source;
+        private readonly MemoryStream _source;
 
-        public MemoryInputStream( List<byte> bytes )
-        {
-            _source = new MemoryStream( bytes.ToArray(), false );
-        }
+        public bool IsEof => _source.Position >= _source.Length;
 
-        public void Dispose()
+        public MemoryInputStream( byte[] bytes )
         {
-            _source.Dispose();
-        }
-
-        public bool IsEof()
-        {
-            return _source.Length == _source.Position;
+            _source = new MemoryStream( bytes, writable: false );
         }
 
         public int ReadBlock( byte[] buffer, uint count )
@@ -27,9 +18,14 @@ namespace Streams.InputStream
             return _source.Read( buffer, offset: 0, ( int )count );
         }
 
-        public byte ReadByte()
+        public int ReadByte()
         {
-            return ( byte )_source.ReadByte();
+            return _source.ReadByte();
+        }
+
+        public void Dispose()
+        {
+            _source.Dispose();
         }
     }
 }

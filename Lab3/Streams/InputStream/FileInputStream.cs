@@ -1,25 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Streams.InputStream
 {
-    class FileInputStream : IInputStream
+    public class FileInputStream : IInputStream
     {
-        FileStream _source;
+        private readonly FileStream _source;
+
+        public bool IsEof => _source.Position >= _source.Length;
 
         public FileInputStream( string fileName )
         {
             _source = new FileStream( fileName, FileMode.Open );
-        }
-
-        public void Dispose()
-        {
-            _source.Dispose();
-        }
-
-        public bool IsEof()
-        {
-            return _source.Length == _source.Position;
         }
 
         public int ReadBlock( byte[] buffer, uint count )
@@ -27,9 +18,14 @@ namespace Streams.InputStream
             return _source.Read( buffer, offset: 0, ( int )count );
         }
 
-        public byte ReadByte()
+        public int ReadByte()
         {
-            return ( byte )_source.ReadByte();
+            return _source.ReadByte();
+        }
+
+        public void Dispose()
+        {
+            _source.Dispose();
         }
     }
 }

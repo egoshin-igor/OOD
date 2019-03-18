@@ -2,18 +2,18 @@
 
 namespace Streams.OutputStream
 {
-    class FileOutputStream : IOutputStream
+    public class FileOutputStream : IOutputStream
     {
-        FileStream _source;
+        private readonly FileStream _source;
 
         public FileOutputStream( string fileName )
         {
             _source = new FileStream( fileName, FileMode.OpenOrCreate );
         }
 
-        public void Dispose()
+        public void WriteByte( byte data )
         {
-            _source.Dispose();
+            _source.WriteByte( data );
         }
 
         public void WriteBlock( byte[] data, uint size )
@@ -21,9 +21,14 @@ namespace Streams.OutputStream
             _source.Write( data, offset: 0, ( int )size );
         }
 
-        public void WriteByte( byte data )
+        public void Dispose()
         {
-            _source.WriteByte( data );
+            Flush();
+            _source.Dispose();
+        }
+
+        public void Flush()
+        {
         }
     }
 }

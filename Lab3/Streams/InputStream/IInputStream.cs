@@ -2,10 +2,10 @@
 
 namespace Streams.InputStream
 {
-    interface IInputStream : IDisposable
+    public interface IInputStream : IDisposable
     {
-        bool IsEof();
-        byte ReadByte();
+        bool IsEof { get; }
+        int ReadByte();
         int ReadBlock( byte[] buffer, uint count );
     }
 }
