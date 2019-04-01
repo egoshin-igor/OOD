@@ -1,4 +1,4 @@
-﻿]using Coffee.Beverage;
+﻿using Coffee.Beverage;
 
 namespace Coffee.Condiment
 {

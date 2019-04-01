@@ -9,9 +9,9 @@ namespace Streams.InputStream
         private readonly IInputStream _inputStream;
 
         private byte _currentValue;
-        private byte _length = 0;
+        private int _byteslength = 0;
 
-        public bool IsEof => _inputStream.IsEof;
+        public bool IsEof => _byteslength == 0 && _inputStream.IsEof;
 
         public DecompressionInputStream( IInputStream inputStream )
         {
@@ -31,7 +31,7 @@ namespace Streams.InputStream
             {
                 buffer[ i ] = ( byte )ReadByte();
                 readSize++;
-                if ( IsEof && _length == 0 )
+                if ( IsEof && _byteslength == 0 )
                 {
                     break;
                 }
@@ -42,9 +42,9 @@ namespace Streams.InputStream
 
         public int ReadByte()
         {
-            if ( _length != 0 )
+            if ( _byteslength != 0 )
             {
-                _length--;
+                _byteslength--;
                 return _currentValue;
             }
 
@@ -70,14 +70,14 @@ namespace Streams.InputStream
                 return RleMarker;
             }
 
-            _length = _currentValue;
+            _byteslength = _currentValue + 4;
             if ( IsEof )
             {
                 throw new ApplicationException( $"After length={RleMarker} marker can be one or more bytes" );
             }
 
             _currentValue = ( byte )_inputStream.ReadByte();
-            _length--;
+            _byteslength--;
 
             return _currentValue;
         }

@@ -11,8 +11,8 @@ namespace Streams.Test.OutputStream
         {
             // Arrange
             var result = new byte[ 3 ];
-            IOutputStream compressionOutputStream = new СompressionOutputStream( new MemoryOutputStream( result ) );
-            var expectedData = new byte[] { 255, 10, 1 };
+            IOutputStream compressionOutputStream = new CompressionOutputStream( new MemoryOutputStream( result ) );
+            var expectedData = new byte[] { 255, 6, 1 };
 
             // Act
             for ( int i = 0; i < 10; i++ )
@@ -30,7 +30,7 @@ namespace Streams.Test.OutputStream
         {
             // Arrange
             var result = new byte[ 6 ];
-            IOutputStream compressionOutputStream = new СompressionOutputStream( new MemoryOutputStream( result ) );
+            IOutputStream compressionOutputStream = new CompressionOutputStream( new MemoryOutputStream( result ) );
             var expectedData = new byte[] { 0, 1, 2, 3, 4, 5 };
 
             // Act
@@ -49,8 +49,8 @@ namespace Streams.Test.OutputStream
         {
             // Arrange
             var result = new byte[ 5 ];
-            IOutputStream compressionOutputStream = new СompressionOutputStream( new MemoryOutputStream( result ) );
-            var expectedData = new byte[] { 255, 255, 255, 10, 1 };
+            IOutputStream compressionOutputStream = new CompressionOutputStream( new MemoryOutputStream( result ) );
+            var expectedData = new byte[] { 255, 255, 255, 6, 1 };
 
             // Act
             compressionOutputStream.WriteByte( 255 );
@@ -65,12 +65,31 @@ namespace Streams.Test.OutputStream
         }
 
         [Fact]
+        public void WriteByte_WriteEqualBytesMoreThanCompressionLength_WriteCompressed()
+        {
+            // Arrange
+            var result = new byte[ 6 ];
+            IOutputStream compressionOutputStream = new CompressionOutputStream( new MemoryOutputStream( result ) );
+            var expectedData = new byte[] { 255, 254, 1, 255, 38, 1 };
+
+            // Act
+            for ( int i = 0; i < 300; i++ )
+            {
+                compressionOutputStream.WriteByte( 1 );
+            }
+            compressionOutputStream.Dispose();
+
+            // Assert
+            Assert.True( result.SequenceEqual( expectedData ) );
+        }
+
+        [Fact]
         public void WriteByte_WriteManyEqualsAndNotEqualsBytes_WritePartCompressedAndPartUncompressed()
         {
             // Arrange
             var result = new byte[ 6 ];
-            IOutputStream compressionOutputStream = new СompressionOutputStream( new MemoryOutputStream( result ) );
-            var expectedData = new byte[] { 0, 1, 2, 255, 4, 1 };
+            IOutputStream compressionOutputStream = new CompressionOutputStream( new MemoryOutputStream( result ) );
+            var expectedData = new byte[] { 0, 1, 2, 255, 0, 1 };
 
             // Act
             for ( int i = 0; i < 3; i++ )
@@ -92,9 +111,9 @@ namespace Streams.Test.OutputStream
         {
             // Arrange
             var result = new byte[ 6 ];
-            IOutputStream compressionOutputStream = new СompressionOutputStream( new MemoryOutputStream( result ) );
+            IOutputStream compressionOutputStream = new CompressionOutputStream( new MemoryOutputStream( result ) );
             var inputData = new byte[] { 1, 1, 1, 1, 2, 2, 2, 2, 2 };
-            var expectedData = new byte[] { 255, 4, 1, 255, 5, 2 };
+            var expectedData = new byte[] { 255, 0, 1, 255, 1, 2 };
 
             // Act
             compressionOutputStream.WriteBlock( inputData, ( uint )inputData.Length );

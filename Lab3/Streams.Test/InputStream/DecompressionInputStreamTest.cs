@@ -57,15 +57,37 @@ namespace Streams.Test.InputStream
             // Arrange
             var inputData = new byte[] { 255, 3, 4 };
             IInputStream decompressionInputStream = new DecompressionInputStream( new MemoryInputStream( inputData ) );
-            var buffer = new byte[ 3 ];
-            var expectedData = new byte[] { 4, 4, 4 };
+            var buffer = new byte[ 7 ];
+            var expectedData = new byte[] { 4, 4, 4, 4, 4, 4, 4 };
 
             // Act
-            int readSize = decompressionInputStream.ReadBlock( buffer, 3 );
+            int readSize = decompressionInputStream.ReadBlock( buffer, 7 );
             decompressionInputStream.Dispose();
 
             // Assert
-            Assert.Equal( 3, readSize );
+            Assert.Equal( 7, readSize );
+            Assert.True( buffer.SequenceEqual( expectedData ) );
+        }
+
+        [Fact]
+        public void ReadBlock_ReadFromCompressedBytes_ReadCorrect()
+        {
+            // Arrange
+            var inputData = new byte[] { 255, 254, 1, 255, 26, 1 };
+            IInputStream decompressionInputStream = new DecompressionInputStream( new MemoryInputStream( inputData ) );
+            var buffer = new byte[ 288 ];
+            var expectedData = new byte[ 288 ];
+            for ( int i = 0; i < 288; i++ )
+            {
+                expectedData[ i ] = 1;
+            }
+
+            // Act
+            int readSize = decompressionInputStream.ReadBlock( buffer, 288 );
+            decompressionInputStream.Dispose();
+
+            // Assert
+            Assert.Equal( 288, readSize );
             Assert.True( buffer.SequenceEqual( expectedData ) );
         }
     }

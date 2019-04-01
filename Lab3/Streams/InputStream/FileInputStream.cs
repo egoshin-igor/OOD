@@ -10,7 +10,7 @@ namespace Streams.InputStream
 
         public FileInputStream( string fileName )
         {
-            _source = new FileStream( fileName, FileMode.Open );
+            _source = new FileStream( fileName, FileMode.OpenOrCreate );
         }
 
         public int ReadBlock( byte[] buffer, uint count )

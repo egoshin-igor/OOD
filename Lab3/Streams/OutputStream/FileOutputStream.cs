@@ -8,7 +8,7 @@ namespace Streams.OutputStream
 
         public FileOutputStream( string fileName )
         {
-            _source = new FileStream( fileName, FileMode.OpenOrCreate );
+            _source = new FileStream( fileName, FileMode.Create );
         }
 
         public void WriteByte( byte data )

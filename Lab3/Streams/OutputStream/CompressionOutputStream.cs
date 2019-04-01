@@ -2,16 +2,16 @@
 
 namespace Streams.OutputStream
 {
-    public class СompressionOutputStream : IOutputStream
+    public class CompressionOutputStream : IOutputStream
     {
         private const byte RleMarker = 255;
-        private const byte MaxCompressionLength = 254;
+        private const int MaxCompressionLength = 258;
         private byte _lastByte = 0;
-        private byte _lastBytesLength = 0;
+        private int _lastBytesLength = 0;
 
         private readonly IOutputStream _outputStream;
 
-        public СompressionOutputStream( IOutputStream outputStream )
+        public CompressionOutputStream( IOutputStream outputStream )
         {
             _outputStream = outputStream;
         }
@@ -93,7 +93,7 @@ namespace Streams.OutputStream
             return result;
         }
 
-        private byte[] GetCompressed( byte data, byte length )
+        private byte[] GetCompressed( byte data, int length )
         {
             const int smallEqualBytesLength = 3;
 
@@ -113,7 +113,7 @@ namespace Streams.OutputStream
             }
             else
             {
-                result.AddRange( new byte[] { RleMarker, length, data } );
+                result.AddRange( new byte[] { RleMarker, ( byte )( length - 4 ), data } );
             }
 
             return result.ToArray();

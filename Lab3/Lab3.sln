@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coffee", "Coffee\Coffee.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Streams", "Streams\Streams.csproj", "{C618ED44-E6D1-4198-8493-D7E3698A428E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streams.Test", "Streams.Test\Streams.Test.csproj", "{B5C52642-0C02-4BDF-915A-1A780A433D7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Streams.Test", "Streams.Test\Streams.Test.csproj", "{B5C52642-0C02-4BDF-915A-1A780A433D7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,7 +11,6 @@ namespace Streams.ArgumentsExecutor
         private string _inputFileName = null;
         private string _outputFileName = null;
         private readonly string[] _arguments;
-        private Queue<Action> _transformQueue = new Queue<Action>();
 
         public ArgumentsExecutor( string[] arguments )
         {
@@ -21,11 +20,23 @@ namespace Streams.ArgumentsExecutor
         public void Execute()
         {
             ParseFileNames();
+            List<ArgumentOption> argumentOptions = GetArgumentOptions();
+            bool isArgumentTypesNotSimular = argumentOptions.Select( ao => ao.Type ).Distinct().Count() != 1;
+            if ( isArgumentTypesNotSimular )
+            {
+                throw new ApplicationException( "Arguments must be only input or output options" );
+            }
+
+            ArgumentType type = argumentOptions.First().Type;
+            if ( type == ArgumentType.Input )
+            {
+                argumentOptions.Reverse();
+            }
 
             IInputStream inputStream = new FileInputStream( _inputFileName );
-            IOutputStream outputStream = new FileOutputStream( _inputFileName );
+            IOutputStream outputStream = new FileOutputStream( _outputFileName );
+            DecorateByArgumentOptions( argumentOptions, ref inputStream, ref outputStream );
 
-            ParseCommands( ref inputStream, ref outputStream );
             WriteFromTo( inputStream, outputStream );
 
             inputStream.Dispose();
@@ -44,8 +55,9 @@ namespace Streams.ArgumentsExecutor
             _inputFileName = _arguments[ length - 2 ];
         }
 
-        private void ParseCommands( ref IInputStream inputStream, ref IOutputStream outputStream )
+        private List<ArgumentOption> GetArgumentOptions()
         {
+            var result = new List<ArgumentOption>();
             int? key = null;
             var argumentsParser = new ArgumentsParser( _arguments.Take( _arguments.Length - 2 ).ToArray() );
             while ( argumentsParser.HasNext )
@@ -58,7 +70,7 @@ namespace Streams.ArgumentsExecutor
                         {
                             throw new ApplicationException( "Invalid command" );
                         }
-                        outputStream = new EncodingOutputStream( outputStream, key.Value );
+                        result.Add( new ArgumentOption( ArgumentType.Output, "--encrypt", key ) );
                         break;
                     case "--decrypt":
                         key = argumentsParser.HasNext ? argumentsParser.GetNextAsInt() : null;
@@ -66,17 +78,49 @@ namespace Streams.ArgumentsExecutor
                         {
                             throw new ApplicationException( "Invalid command" );
                         }
-                        inputStream = new DecodingInputStream( inputStream, key.Value );
+                        result.Add( new ArgumentOption( ArgumentType.Input, "--decrypt", key ) );
                         break;
                     case "--compress":
-                        outputStream = new СompressionOutputStream( outputStream );
+                        result.Add( new ArgumentOption( ArgumentType.Output, "--compress" ) );
+                        break;
+                    case "--decompress":
+                        result.Add( new ArgumentOption( ArgumentType.Input, "--decompress" ) );
+                        break;
+                    default:
+                        throw new ApplicationException( "Invalid command" );
+                }
+            }
+
+            return result;
+        }
+
+        public void DecorateByArgumentOptions( List<ArgumentOption> argumentOptions, ref IInputStream inputStream, ref IOutputStream outputStream )
+        {
+            if ( argumentOptions.Count == 0 )
+            {
+                return;
+            }
+
+            foreach ( ArgumentOption argumentOption in argumentOptions )
+            {
+                switch ( argumentOption.FirstArgument )
+                {
+                    case "--encrypt":
+                        outputStream = new EncodingOutputStream( outputStream, argumentOption.SecondArgument.Value );
+                        break;
+                    case "--decrypt":
+                        inputStream = new DecodingInputStream( inputStream, argumentOption.SecondArgument.Value );
+                        break;
+                    case "--compress":
+                        outputStream = new CompressionOutputStream( outputStream );
                         break;
                     case "--decompress":
                         inputStream = new DecompressionInputStream( inputStream );
                         break;
                     default:
-                        throw new ApplicationException( "Invalid command" );
+                        break;
                 }
+
             }
         }
 
