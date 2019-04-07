@@ -15,16 +15,6 @@ namespace Command.Document
 
         public bool CanRendo => throw new NotImplementedException();
 
-        protected DocumentHistory()
-        {
-        }
-
-        public DocumentHistory( List<ICommand> commands, List<ICommand> cancelledCommands )
-        {
-            _commands = commands;
-            _cancelledCommands = cancelledCommands;
-        }
-
         public virtual void Undo()
         {
             if ( !CanUndo )
@@ -51,6 +41,18 @@ namespace Command.Document
             _cancelledCommands.RemoveAt( _cancelledCommands.Count - 1 );
 
             _commands.Add( command );
+        }
+
+        public void AddToHistory( ICommand command )
+        {
+            const int maxCommandsQuantity = 10;
+
+            _cancelledCommands.Clear();
+            _commands.Add( command );
+            if ( _commands.Count > maxCommandsQuantity )
+            {
+                _commands.RemoveAt( 0 );
+            }
         }
     }
 }

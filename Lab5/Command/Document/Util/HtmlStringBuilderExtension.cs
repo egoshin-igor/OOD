@@ -22,23 +22,23 @@ namespace Command.Document.Util
 
         public static StringBuilder Write( this StringBuilder stringBuilder, DocumentItem documentItem, string path )
         {
-            string referencePath = $"{Path.Combine( Directory.GetCurrentDirectory(), path )}/images/"
-                .Replace( '\\', '/' );
+            const string referencePath = "images/";
 
             if ( documentItem.Type == DocumentItemType.Image )
             {
-                string newPath = referencePath + Guid.NewGuid().ToString() + ".png";
+                string fullPath = Path.GetDirectoryName( path ) + $"/{referencePath}";
                 IImage image = documentItem.Image;
+                string newImageName = Guid.NewGuid().ToString() + image.FileExtrension;
                 try
                 {
-                    Directory.CreateDirectory( Path.GetDirectoryName( newPath ) );
-                    File.Copy( image.Path, newPath, overwrite: true );
+                    Directory.CreateDirectory( fullPath );
+                    File.Copy( image.Path, fullPath + newImageName, overwrite: true );
                 }
                 catch ( Exception ex )
                 {
                     throw new DocumentException( $"File cant by copy: {ex.Message}" );
                 }
-                stringBuilder.Append( $"<img src=\"{newPath}\" width=\"{image.Width}\" height=\"{image.Height}\">" );
+                stringBuilder.Append( $"<img src=\"{referencePath + newImageName}\" width=\"{image.Width}\" height=\"{image.Height}\">" );
             }
             else if ( documentItem.Type == DocumentItemType.Paragraph )
             {

@@ -2,21 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Command.Document;
 
 namespace Command.Menu
 {
     public class Menu
     {
         private readonly List<MenuItem> _menuItems = new List<MenuItem>();
-        private readonly IDocument _document;
 
-        public Menu( IDocument document )
+        public Menu()
         {
-            _document = document;
         }
 
-        public void AddItem( string shortcut, string description, Action<string, IDocument> commandExecutor )
+        public void AddItem( string shortcut, string description, Action<string> commandExecutor )
         {
             _menuItems.Add( new MenuItem( shortcut, description, commandExecutor ) );
         }
@@ -44,7 +41,7 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            menuItem.CommandExecuter( commandParams, _document );
+            menuItem.CommandExecuter( commandParams );
         }
 
         public string GetCommandsInfo()

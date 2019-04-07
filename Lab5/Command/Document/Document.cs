@@ -43,7 +43,6 @@ namespace Command.Document
         public void InsertParagraph( IParagraph paragraph, int? position = null )
         {
             var paragraphDocumentItem = new DocumentItem( paragraph );
-
             Insert( paragraphDocumentItem, position );
         }
 
@@ -69,6 +68,7 @@ namespace Command.Document
 
         public void Save( string path )
         {
+            path = path.Replace( '\\', '/' );
             var stringBuilder = new StringBuilder();
 
             stringBuilder.Append( "<!DOCTYPE html>" );
@@ -84,7 +84,7 @@ namespace Command.Document
 
         private void Save( string path, string text )
         {
-            using ( var sw = new StreamWriter( path + Title + ".html" ) )
+            using ( var sw = new StreamWriter( path ) )
             {
                 sw.Write( text );
             }

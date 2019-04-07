@@ -20,7 +20,7 @@ namespace Command.Test.Document.Command
         public void Execute_InsertImageInvoked()
         {
             // Arrange
-            var imageDocumentItem = new DocumentItem( new Image.Image( "", 1, 1 ) );
+            var imageDocumentItem = new DocumentItem( new Image.Image( "", "", 1, 1 ) );
 
             bool isInsertImageInvoked = false;
             _documentMock
@@ -41,7 +41,7 @@ namespace Command.Test.Document.Command
         public void Unexecute_DeleteItemInvoked()
         {
             // Arrange
-            var imageDocumentItem = new DocumentItem( new Image.Image( "", 1, 1 ) );
+            var imageDocumentItem = new DocumentItem( new Image.Image( "", "", 1, 1 ) );
 
             bool isDeleteItemInvoked = false;
             _documentMock.Setup( d => d.DeleteItem( It.IsAny<int>() ) ).Callback( () => isDeleteItemInvoked = true );

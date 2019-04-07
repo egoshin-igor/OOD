@@ -59,7 +59,7 @@ namespace Command.Test.Document
             string path = "path";
 
             // Act
-            _document.InsertImage( new Image.Image( path, 22, 22 ) );
+            _document.InsertImage( new Image.Image( path, "", 22, 22 ) );
 
             // Assert
             Assert.Equal( 1, _document.ItemsCount );
@@ -73,7 +73,7 @@ namespace Command.Test.Document
             int expectedSize = 10000;
 
             // Act
-            _document.InsertImage( new Image.Image( "", 1000000, 100000 ) );
+            _document.InsertImage( new Image.Image( "", "", 1000000, 100000 ) );
 
             // Assert
             Assert.Equal( 1, _document.ItemsCount );
@@ -114,7 +114,7 @@ namespace Command.Test.Document
         public void DeleteItem_CorrectDelete()
         {
             // Arrange
-            _document.InsertImage( new Image.Image( "", 1000000, 100000 ) );
+            _document.InsertImage( new Image.Image( "", "", 1000000, 100000 ) );
 
             // Act
             _document.DeleteItem( 0 );

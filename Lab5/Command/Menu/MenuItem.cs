@@ -7,9 +7,9 @@ namespace Command.Menu
     {
         public string Shortcut { get; }
         public string Description { get; }
-        public Action<string, IDocument> CommandExecuter { get; }
+        public Action<string> CommandExecuter { get; }
 
-        public MenuItem( string shortcut, string description, Action<string, IDocument> commandExecutor )
+        public MenuItem( string shortcut, string description, Action<string> commandExecutor )
         {
             Shortcut = shortcut;
             Description = description;

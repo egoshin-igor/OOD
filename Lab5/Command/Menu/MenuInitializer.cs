@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Command.Document;
 using Command.Document.Command;
 using Command.Menu.Util;
@@ -10,14 +11,13 @@ namespace Command.Menu
     public class MenuInitializer
     {
         private readonly Menu _menu;
-        private readonly List<ICommand> _commands = new List<ICommand>();
-        private readonly List<ICommand> _cancelledCommands = new List<ICommand>();
+        private readonly IDocument _document;
 
         public MenuInitializer()
         {
-            var documentHistory = new DocumentHistory( _commands, _cancelledCommands );
+            var documentHistory = new DocumentHistory();
             IDocument document = new Document.Document( documentHistory );
-            _menu = new Menu( document );
+            _menu = new Menu();
         }
 
         public Menu GetInited()
@@ -37,16 +37,6 @@ namespace Command.Menu
             return _menu;
         }
 
-        private void AddCommand( ICommand command )
-        {
-            _cancelledCommands.Clear();
-            _commands.Add( command );
-            if ( _commands.Count > 10 )
-            {
-                _commands.RemoveAt( 0 );
-            }
-        }
-
         private void InitInsertParagraphMenuItem()
         {
             string description = $"Print <InsertParagraph> <position|end> <text> to save paragraph on document";
@@ -59,7 +49,7 @@ namespace Command.Menu
             _menu.AddItem(
                 shortcut: "Help",
                 description: "Print <Help> to show command info",
-                ( arguments, doc ) => Console.WriteLine( _menu.GetCommandsInfo() )
+                ( arguments ) => Console.WriteLine( _menu.GetCommandsInfo() )
             );
         }
 
@@ -144,7 +134,7 @@ namespace Command.Menu
             );
         }
 
-        private void InsertParagraphCommandExecutor( string commandParams, IDocument document )
+        private void InsertParagraphCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 2 )
@@ -156,12 +146,12 @@ namespace Command.Menu
             string text = argumentsParser.GetNextAsString();
 
             ICommand command =
-                new InsertParagraphCommand( new Paragraph.Paragraph( text ), document, position );
+                new InsertParagraphCommand( new Paragraph.Paragraph( text ), _document, position );
             command.Execute();
             AddCommand( command );
         }
 
-        private void SaveCommandExecutor( string commandParams, IDocument document )
+        private void SaveCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 1 )
@@ -169,10 +159,10 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            document.Save( argumentsParser.GetNextAsString() );
+            _document.Save( argumentsParser.GetNextAsString() );
         }
 
-        private void SetTitleCommandExecutor( string commandParams, IDocument document )
+        private void SetTitleCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 1 )
@@ -180,12 +170,12 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            ICommand command = new SetTitleCommand( argumentsParser.GetNextAsString(), document );
+            ICommand command = new SetTitleCommand( argumentsParser.GetNextAsString(), _document );
             command.Execute();
             AddCommand( command );
         }
 
-        private void ReplaceTextCommandExecutor( string commandParams, IDocument document )
+        private void ReplaceTextCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 2 )
@@ -200,12 +190,12 @@ namespace Command.Menu
             }
             string text = argumentsParser.GetNextAsString();
 
-            ICommand command = new ReplaceTextCommand( position.Value, text, document );
+            ICommand command = new ReplaceTextCommand( position.Value, text, _document );
             command.Execute();
             AddCommand( command );
         }
 
-        public void DeleteItemCommandExecutor( string commandParams, IDocument document )
+        public void DeleteItemCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 1 )
@@ -219,12 +209,12 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            ICommand command = new DeleteItemCommand( position.Value, document );
+            ICommand command = new DeleteItemCommand( position.Value, _document );
             command.Execute();
             AddCommand( command );
         }
 
-        public void UndoCommandExecutor( string commandParams, IDocument document )
+        public void UndoCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 0 )
@@ -232,10 +222,10 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            document.Undo();
+            _document.Undo();
         }
 
-        public void RedoCommandExecutor( string commandParams, IDocument document )
+        public void RedoCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 0 )
@@ -243,10 +233,10 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            document.Redo();
+            _document.Redo();
         }
 
-        private void ListCommandExecutor( string commandParams, IDocument document )
+        private void ListCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 0 )
@@ -257,7 +247,7 @@ namespace Command.Menu
             Console.WriteLine( _menu.GetDocumentInfo() );
         }
 
-        private void InsertImageCommandExecutor( string commandParams, IDocument document )
+        private void InsertImageCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 4 )
@@ -273,14 +263,15 @@ namespace Command.Menu
                 throw new MenuException();
             }
             string path = argumentsParser.GetNextAsString();
+            string fileExtension = Path.GetExtension( path );
 
             ICommand command =
-                new InsertImageCommand( new Image.Image( path, weight.Value, height.Value ), document, position );
+                new InsertImageCommand( new Image.Image( path, fileExtension, weight.Value, height.Value ), _document, position );
             command.Execute();
             AddCommand( command );
         }
 
-        private void ResizeImageCommandExecutor( string commandParams, IDocument document )
+        private void ResizeImageCommandExecutor( string commandParams )
         {
             var argumentsParser = new ArgumentsParser( commandParams );
             if ( argumentsParser.NextArgumentsCount != 3 )
@@ -296,7 +287,7 @@ namespace Command.Menu
                 throw new MenuException();
             }
 
-            ICommand command = new ResizeImageCommand( position.Value, weight.Value, height.Value, document );
+            ICommand command = new ResizeImageCommand( position.Value, weight.Value, height.Value, _document );
             command.Execute();
             AddCommand( command );
         }

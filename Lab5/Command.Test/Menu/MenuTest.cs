@@ -53,7 +53,7 @@ namespace Command.Test.Menu
                 "InsertImage",
                 description: "",
                 ( shortcut, document ) => document
-                    .InsertImage( new Image.Image( path: "", weidht: 1, height: 1 ) )
+                    .InsertImage( new Image.Image( path: "", fileExtension: "", weidht: 1, height: 1 ) )
             );
 
             // Act

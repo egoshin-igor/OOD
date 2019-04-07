@@ -2,15 +2,17 @@
 {
     public class Image : IImage
     {
-        public Image( string path, int weidht, int height )
+        public Image( string path, string fileExtension, int weidht, int height )
         {
             Path = path;
+            FileExtrension = fileExtension;
             Resize( weidht, height );
         }
 
+        public string Path { get; private set; }
+        public string FileExtrension { get; }
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public string Path { get; private set; }
 
         public void Resize( int width, int height )
         {

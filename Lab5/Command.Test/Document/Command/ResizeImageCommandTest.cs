@@ -20,7 +20,7 @@ namespace Command.Test.Document.Command
         public void Execute_GetItemAndResizeImage()
         {
             // Arrange
-            var imageDocumentItem = new DocumentItem( new Image.Image( "", 1, 1 ) );
+            var imageDocumentItem = new DocumentItem( new Image.Image( "", "", 1, 1 ) );
 
             _documentMock.Setup( d => d.GetItem( It.IsAny<int>() ) ).Returns( imageDocumentItem );
             ICommand command = new ResizeImageCommand( 1, 2, 2, _documentMock.Object );
@@ -37,7 +37,7 @@ namespace Command.Test.Document.Command
         public void Unexecute_ReturnOriginTextValue()
         {
             // Arrange
-            var imageDocumentItem = new DocumentItem( new Image.Image( "", 1, 1 ) );
+            var imageDocumentItem = new DocumentItem( new Image.Image( "", "", 1, 1 ) );
 
             _documentMock.Setup( d => d.GetItem( It.IsAny<int>() ) ).Returns( imageDocumentItem );
             ICommand command = new ResizeImageCommand( 1, 2, 2, _documentMock.Object );

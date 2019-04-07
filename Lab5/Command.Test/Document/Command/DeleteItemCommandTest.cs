@@ -35,7 +35,7 @@ namespace Command.Test.Document.Command
         public void Unexecute_InsertItemInvoked()
         {
             // Arrange
-            var imageDocumentItem = new DocumentItem( new Image.Image( "", 1, 1 ) );
+            var imageDocumentItem = new DocumentItem( new Image.Image( "", "", 1, 1 ) );
 
             bool isInsertItemInvoked = false;
             _documentMock
