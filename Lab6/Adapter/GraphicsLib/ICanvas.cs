@@ -6,5 +6,7 @@
         void MoveTo( int x, int y );
         // Рисует линию с текущей позиции, передвигая перо в точку x, y 
         void LineTo( int x, int y );
+
+        void SetColor( uint rgbColor );
     }
 }

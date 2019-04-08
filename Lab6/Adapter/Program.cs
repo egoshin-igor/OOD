@@ -32,10 +32,11 @@ namespace Adapter
             var triangle = new Triangle(
                 new ShapeDrawingLib.Point( 10, 15 ),
                 new ShapeDrawingLib.Point( 100, 200 ),
-                new ShapeDrawingLib.Point( 150, 250 )
+                new ShapeDrawingLib.Point( 150, 250 ),
+                0xFFFFFF
             );
 
-            var rectangle = new Rectangle( new ShapeDrawingLib.Point( 30, 40 ), 18, 24 );
+            var rectangle = new Rectangle( new ShapeDrawingLib.Point( 30, 40 ), 18, 24, 0xEEAA11 );
             Console.WriteLine( "Triangle:" );
             painter.Draw( triangle );
             Console.WriteLine( "Rectangle" );

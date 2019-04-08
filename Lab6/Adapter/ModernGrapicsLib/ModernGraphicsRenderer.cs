@@ -33,14 +33,16 @@ namespace Adapter.ModernGrapicsLib
         }
 
         // Выполняет рисование линии
-        public void DrawLine( Point start, Point end )
+        public void DrawLine( Point start, Point end, RGBAColor color )
         {
             if ( !_drawing )
             {
                 throw new GraphicsLogicalException( "DrawLine is allowed between BeginDraw()/EndDraw() only" );
             }
 
-            _output.WriteLine( $"<line fromX={start.X} fromY={start.Y} toX={end.X} toY={end.Y}/>" );
+            _output.WriteLine( $"<line fromX={start.X} fromY={start.Y} toX={end.X} toY={end.Y}>" );
+            _output.WriteLine( $"  <color r=\"{color.R}\" g=\"{color.G}\" b=\"{color.B}\" a=\"{color.A}\" />" );
+            _output.WriteLine( "</line>" );
         }
 
         // Этот метод должен быть вызван в конце рисования

@@ -13,5 +13,10 @@ namespace Adapter.GraphicsLib
         {
             Console.WriteLine( $"MoveTo ({ x }, { y })" );
         }
+
+        public void SetColor( uint rgbColor )
+        {
+            Console.WriteLine( $"SetColor ({rgbColor.ToString( "x6" )})" );
+        }
     }
 }
