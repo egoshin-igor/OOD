@@ -1,9 +1,9 @@
 ﻿using Command.Document;
 using Command.Document.Command;
 using Command.Document.Item;
-using Command.Image;
 using Moq;
 using Xunit;
+using ImageClass = Command.Image.Image;
 
 namespace Command.Test.Document.Command
 {
@@ -35,11 +35,11 @@ namespace Command.Test.Document.Command
         public void Unexecute_InsertItemInvoked()
         {
             // Arrange
-            var imageDocumentItem = new DocumentItem( new Image.Image( "", "", 1, 1 ) );
+            var imageDocumentItem = new DocumentItem( new ImageClass( "", "", 1, 1 ) );
 
             bool isInsertItemInvoked = false;
             _documentMock
-                .Setup( d => d.InsertImage( It.IsAny<IImage>(), It.IsAny<int>() ) )
+                .Setup( d => d.InsertImage( It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>() ) )
                 .Callback( () => isInsertItemInvoked = true );
             _documentMock.Setup( d => d.GetItem( It.IsAny<int>() ) ).Returns( imageDocumentItem );
             ICommand command = new DeleteItemCommand( 1, _documentMock.Object );

@@ -14,6 +14,7 @@ namespace Command.Document.Command
         {
             _document = document;
             _title = title;
+            _previousTitle = _document.Title;
         }
 
         public void Execute()
@@ -25,6 +26,10 @@ namespace Command.Document.Command
         public void Unexecute()
         {
             _document.Title = _previousTitle;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

@@ -32,12 +32,17 @@ namespace Command.Document.Command
             _previousWeight = image.Width;
             _previousHeight = image.Height;
             image.Resize( _width, _height );
+            _document.DocumentHistory.AddToHistory( this );
         }
 
         public void Unexecute()
         {
             DocumentItem item = _document.GetItem( _position );
             item.Image.Resize( _previousWeight, _previousWeight );
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

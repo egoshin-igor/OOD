@@ -8,9 +8,9 @@ namespace Command
     {
         static void Main( string[] args )
         {
-            MenuInitializer menuInitializer = new MenuInitializer();
+            MenuSetup menuInitializer = new MenuSetup();
 
-            Menu.Menu menu = menuInitializer.GetInited();
+            Menu.Menu menu = menuInitializer.GetSetuped();
             Run( menu );
         }
 

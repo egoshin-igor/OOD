@@ -19,7 +19,7 @@ namespace Command.Menu.Util
         {
             if ( arguments != null )
             {
-                _arguments = SplitToArguments( arguments );
+                _arguments = arguments.Split( ' ' );
             }
             else
             {
@@ -43,27 +43,20 @@ namespace Command.Menu.Util
             return null;
         }
 
-        private string[] SplitToArguments( string str )
+        public string GetNextsAsString( char delimiter )
         {
-            return Regex.Matches( str, @"[\""].+?[\""]|[^ ]+" )
-                .Cast<Match>()
-                .Select( m =>
+            var resultBuilder = new StringBuilder();
+
+            while ( HasNext )
+            {
+                resultBuilder.Append( GetNextAsString() );
+                if ( HasNext )
                 {
-                    string param = m.Value;
-                    if ( param.Length < 2 )
-                    {
-                        return param;
-                    }
+                    resultBuilder.Append( delimiter );
+                }
+            }
 
-                    int lastIndex = param.Length - 1;
-                    if ( param[ 0 ] == '\"' && param[ lastIndex ] == '\"' )
-                    {
-                        return param.Substring( 1, param.Length - 2 );
-                    }
-
-                    return param;
-                } )
-                .ToArray();
+            return resultBuilder.ToString();
         }
     }
 }

@@ -1,23 +1,25 @@
-﻿using Command.Image;
-
-namespace Command.Document.Command
+﻿namespace Command.Document.Command
 {
     public class InsertImageCommand : ICommand
     {
-        private readonly IImage _image;
+        private readonly string _path;
+        private readonly int _weidht;
+        private readonly int _height;
         private readonly IDocument _document;
         private int? _position;
 
-        public InsertImageCommand( IImage image, IDocument document, int? position )
+        public InsertImageCommand( string path, int weidht, int height, IDocument document, int? position )
         {
-            _image = image;
+            _path = path;
+            _weidht = weidht;
+            _height = height;
             _document = document;
             _position = position;
         }
 
         public void Execute()
         {
-            _document.InsertImage( _image, _position );
+            _document.InsertImage( _path, _weidht, _height, _position );
             if ( _position == null )
             {
                 _position = _document.ItemsCount - 1;
@@ -27,6 +29,10 @@ namespace Command.Document.Command
         public void Unexecute()
         {
             _document.DeleteItem( _position.Value );
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

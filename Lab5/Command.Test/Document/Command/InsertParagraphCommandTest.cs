@@ -25,11 +25,11 @@ namespace Command.Test.Document.Command
 
             bool isInsertParagraphInvoked = false;
             _documentMock
-                .Setup( d => d.InsertParagraph( It.IsAny<IParagraph>(), It.IsAny<int>() ) )
+                .Setup( d => d.InsertParagraph( It.IsAny<string>(), It.IsAny<int>() ) )
                 .Callback( () => isInsertParagraphInvoked = true );
 
             _documentMock.Setup( d => d.GetItem( It.IsAny<int>() ) ).Returns( paragrpahDocumentItem );
-            ICommand command = new InsertParagraphCommand( paragrpahDocumentItem.Paragraph, _documentMock.Object, 1 );
+            ICommand command = new InsertParagraphCommand( "", _documentMock.Object, 1 );
 
             // Act
             command.Execute();
@@ -46,7 +46,7 @@ namespace Command.Test.Document.Command
 
             bool isDeleteItemInvoked = false;
             _documentMock.Setup( d => d.DeleteItem( It.IsAny<int>() ) ).Callback( () => isDeleteItemInvoked = true );
-            ICommand command = new InsertParagraphCommand( paragrpahDocumentItem.Paragraph, _documentMock.Object, 1 );
+            ICommand command = new InsertParagraphCommand( "", _documentMock.Object, 1 );
 
             // Act
             command.Unexecute();

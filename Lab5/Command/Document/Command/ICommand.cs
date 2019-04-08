@@ -1,6 +1,8 @@
-﻿namespace Command.Document.Command
+﻿using System;
+
+namespace Command.Document.Command
 {
-    public interface ICommand
+    public interface ICommand : IDisposable
     {
         void Execute();
         void Unexecute();

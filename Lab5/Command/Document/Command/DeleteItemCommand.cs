@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Command.Document.Item;
+﻿using Command.Document.Item;
 using Command.Document.Item.Enum;
+using Command.Image;
 
 namespace Command.Document.Command
 {
@@ -18,6 +16,15 @@ namespace Command.Document.Command
             _position = position;
         }
 
+        public void Dispose()
+        {
+            if ( _deletedDocumentItem.Type == DocumentItemType.Image )
+            {
+                IImage image = _deletedDocumentItem.Image;
+                image.Dispose();
+            }
+        }
+
         public void Execute()
         {
             _deletedDocumentItem = _document.GetItem( _position );
@@ -28,11 +35,12 @@ namespace Command.Document.Command
         {
             if ( _deletedDocumentItem.Type == DocumentItemType.Image )
             {
-                _document.InsertImage( _deletedDocumentItem.Image, _position );
+                IImage image = _deletedDocumentItem.Image;
+                _document.InsertImage( image.Path, image.Width, image.Height, _position );
             }
             else if ( _deletedDocumentItem.Type == DocumentItemType.Paragraph )
             {
-                _document.InsertParagraph( _deletedDocumentItem.Paragraph, _position );
+                _document.InsertParagraph( _deletedDocumentItem.Paragraph.Text, _position );
             }
             else
             {

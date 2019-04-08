@@ -1,26 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Command.Document.Command;
 using Command.Document.Item;
 using Command.Document.Util;
 using Command.Image;
-using Command.Paragraph;
 
 namespace Command.Document
 {
     public class Document : IDocument
     {
         private readonly List<DocumentItem> _items = new List<DocumentItem>();
-        private readonly DocumentHistory _history;
+        private string _title = "Unnamed";
 
+        public IDocumentHistory DocumentHistory { get; }
         public int ItemsCount => _items.Count;
-        public string Title { get; set; } = "Unnamed";
-        public bool CanUndo => _history.CanUndo;
-        public bool CanRedo => _history.CanRedo;
-
-        public Document( DocumentHistory documentHistory )
+        public bool CanUndo => DocumentHistory.CanUndo;
+        public bool CanRedo => DocumentHistory.CanRedo;
+        public string Title
         {
-            _history = documentHistory;
+            get => _title;
+            set
+            {
+                ICommand command = new SetTitleCommand( value, this );
+                _title = value;
+                DocumentHistory.AddToHistory( command );
+            }
+        }
+
+        public Document( IDocumentHistory documentHistory )
+        {
+            DocumentHistory = documentHistory;
         }
 
         public DocumentItem GetItem( int index )
@@ -33,27 +44,53 @@ namespace Command.Document
             return _items[ index ];
         }
 
-        public void InsertImage( IImage image, int? position = null )
+        public void InsertImage( string path, int weight, int height, int? position = null )
         {
-            var imageDocumentItem = new DocumentItem( image );
+            if ( position == null )
+            {
+                position = ItemsCount > 0 ? ItemsCount : 0;
+            }
 
-            Insert( imageDocumentItem, position );
+            string tempFileName = Path.GetTempFileName();
+            try
+            {
+                File.Copy( path, tempFileName, overwrite: true );
+            }
+            catch ( Exception ex )
+            {
+                throw new DocumentException( $"File {path} copying is not possible. {ex.Message}" );
+            }
+
+            IImage temporaryImage = new Image.Image( tempFileName, Path.GetExtension( path ), weight, height );
+
+            var imageDocumentItem = new DocumentItem( temporaryImage );
+
+            Insert( imageDocumentItem, position.Value );
+            ICommand command = new InsertImageCommand( path, weight, height, this, position );
+            DocumentHistory.AddToHistory( command );
         }
 
-        public void InsertParagraph( IParagraph paragraph, int? position = null )
+        public void InsertParagraph( string text, int? position = null )
         {
-            var paragraphDocumentItem = new DocumentItem( paragraph );
-            Insert( paragraphDocumentItem, position );
+            if ( position == null )
+            {
+                position = ItemsCount > 0 ? ItemsCount : 0;
+            }
+
+            var paragraphDocumentItem = new DocumentItem( new Paragraph.Paragraph( text ) );
+            Insert( paragraphDocumentItem, position.Value );
+            ICommand command = new InsertParagraphCommand( text, this, position );
+            DocumentHistory.AddToHistory( command );
         }
 
         public void Redo()
         {
-            _history.Redo();
+            DocumentHistory.Redo();
         }
 
         public void Undo()
         {
-            _history.Undo();
+            DocumentHistory.Undo();
         }
 
         public void DeleteItem( int index )
@@ -63,7 +100,10 @@ namespace Command.Document
                 throw new DocumentException( $"Nonexist remove position {index}" );
             }
 
+            IImage image = _items[ index ].Image;
             _items.RemoveAt( index );
+            ICommand command = new DeleteItemCommand( index, this );
+            DocumentHistory.AddToHistory( command );
         }
 
         public void Save( string path )
@@ -75,7 +115,7 @@ namespace Command.Document
             stringBuilder.Append( "<html>" );
 
             stringBuilder.Append( $"<head><meta charset=\"utf-8\"><title>{Title.GetEscaped()}</title></head>" );
-            stringBuilder.Append( "<body>" ).Write( _items, path ).Append( "<body>" );
+            stringBuilder.Append( "<body>" ).Write( _items, path ).Append( "</body>" );
 
             stringBuilder.Append( "</html>" );
 
@@ -84,27 +124,27 @@ namespace Command.Document
 
         private void Save( string path, string text )
         {
-            using ( var sw = new StreamWriter( path ) )
+            try
             {
-                sw.Write( text );
+                using ( var sw = new StreamWriter( path ) )
+                {
+                    sw.Write( text );
+                }
+            }
+            catch ( Exception ex )
+            {
+                throw new DocumentException( ex.Message );
             }
         }
 
-        private void Insert( DocumentItem documentItem, int? position )
+        private void Insert( DocumentItem documentItem, int position )
         {
-            if ( position.HasValue && ( position > _items.Count || position < 0 ) )
+            if ( position > _items.Count || position < 0 )
             {
                 throw new DocumentException( $"Nonexist insert position {position}" );
             }
 
-            if ( position.HasValue )
-            {
-                _items.Insert( position.Value, documentItem );
-            }
-            else
-            {
-                _items.Add( documentItem );
-            }
+            _items.Insert( position, documentItem );
         }
     }
 }

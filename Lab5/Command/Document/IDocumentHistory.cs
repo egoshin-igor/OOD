@@ -5,7 +5,7 @@ namespace Command.Document
     public interface IDocumentHistory
     {
         bool CanUndo { get; }
-        bool CanRendo { get; }
+        bool CanRedo { get; }
         void Undo();
         void Redo();
         void AddToHistory( ICommand command );

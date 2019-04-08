@@ -26,12 +26,17 @@ namespace Command.Document.Command
             }
             _previousText = item.Paragraph.Text;
             item.Paragraph.Text = _text;
+            _document.DocumentHistory.AddToHistory( this );
         }
 
         public void Unexecute()
         {
             DocumentItem item = _document.GetItem( _position );
             item.Paragraph.Text = _previousText;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

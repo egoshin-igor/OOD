@@ -1,5 +1,9 @@
-﻿using Command.Document;
+﻿using System.IO;
+using System.Linq;
+using Command.Document;
+using Command.Document.Item;
 using Command.Image;
+using CsQuery;
 using Moq;
 using Xunit;
 
@@ -22,10 +26,9 @@ namespace Command.Test.Document
             // Arrange
             // Act
             // Assert
-            Assert.Throws<DocumentException>( () =>
-                _document.InsertParagraph( new Paragraph.Paragraph( "Text" ), position: -1 )
-            );
+            Assert.Throws<DocumentException>( () => _document.InsertParagraph( "Text", position: -1 ) );
         }
+
 
         [Fact]
         public void InsertParagraph_PositionMoreThanDocumentItemsCount_ThrowDocumentException()
@@ -35,7 +38,18 @@ namespace Command.Test.Document
             // Assert
             Assert.Equal( 0, _document.ItemsCount );
             Assert.Throws<DocumentException>( () =>
-                _document.InsertParagraph( new Paragraph.Paragraph( "Text" ), position: 1 ) );
+                _document.InsertParagraph( "Text", position: 1 ) );
+        }
+
+        [Fact]
+        public void GetItem_ItemByIndexDoesNotExist_CorrectGet()
+        {
+            // Arrange
+            DocumentItem documentItem = new DocumentItem( new Paragraph.Paragraph( "1" ) );
+
+            // Act
+            // Assert
+            Assert.Throws<DocumentException>( () => _document.GetItem( 1 ) );
         }
 
         [Fact]
@@ -45,7 +59,7 @@ namespace Command.Test.Document
             string paragraphText = "Text";
 
             // Act
-            _document.InsertParagraph( new Paragraph.Paragraph( "Text" ) );
+            _document.InsertParagraph( "Text" );
 
             // Assert
             Assert.Equal( 1, _document.ItemsCount );
@@ -56,14 +70,13 @@ namespace Command.Test.Document
         public void InsertImage_CorrectInsertAndGet()
         {
             // Arrange
-            string path = "path";
+            string path = System.IO.Path.GetTempFileName();
 
             // Act
-            _document.InsertImage( new Image.Image( path, "", 22, 22 ) );
+            _document.InsertImage( path, 22, 22 );
 
             // Assert
             Assert.Equal( 1, _document.ItemsCount );
-            Assert.Equal( path, _document.GetItem( 0 ).Image.Path );
         }
 
         [Fact]
@@ -73,13 +86,32 @@ namespace Command.Test.Document
             int expectedSize = 10000;
 
             // Act
-            _document.InsertImage( new Image.Image( "", "", 1000000, 100000 ) );
+            _document.InsertImage( System.IO.Path.GetTempFileName(), 1000000, 100000 );
 
             // Assert
             Assert.Equal( 1, _document.ItemsCount );
             IImage image = _document.GetItem( 0 ).Image;
             Assert.Equal( expectedSize, image.Width );
             Assert.Equal( expectedSize, image.Height );
+        }
+
+        [Fact]
+        public void InsertImage_InsertMoreThanMaxCommandsCanStoreHistory_ImageDoesNotDeleted()
+        {
+            // Arrange
+            string originFilePath = Path.GetTempFileName();
+            _document.InsertImage( originFilePath, 1, 1 );
+            string tempImagePath = _document.GetItem( 0 ).Image.Path;
+            int maxCommandsInHistory = 10;
+
+            // Act
+            for ( int i = 0; i < maxCommandsInHistory + 1; i++ )
+            {
+                _document.InsertImage( originFilePath, 1, 1 );
+            }
+
+            // Assert
+            Assert.True( File.Exists( tempImagePath ) );
         }
 
         [Fact]
@@ -114,13 +146,39 @@ namespace Command.Test.Document
         public void DeleteItem_CorrectDelete()
         {
             // Arrange
-            _document.InsertImage( new Image.Image( "", "", 1000000, 100000 ) );
+            _document.InsertImage( System.IO.Path.GetTempFileName(), 1, 1 );
 
             // Act
             _document.DeleteItem( 0 );
 
             // Assert
             Assert.Equal( 0, _document.ItemsCount );
+        }
+
+        [Fact]
+        public void Save_SaveImage_ImageHasReferencePath()
+        {
+            // Arrange
+            string expectedReferencePathBegining = "images/";
+            _document.InsertImage( Path.GetTempFileName(), 1, 1 );
+            string temporaryDirectory = Path.GetTempPath();
+            string temporaryPath = Path.Combine( temporaryDirectory, "1.html" );
+
+            // Act
+            _document.Save( temporaryPath );
+
+            // Assert
+            string html = File.ReadAllText( temporaryPath );
+            string imagePath = GetFirstImagePath( html );
+            Assert.Equal( expectedReferencePathBegining, imagePath.Substring( 0, expectedReferencePathBegining.Length ) );
+        }
+
+        private string GetFirstImagePath( string html )
+        {
+            CQ image = CQ.Create( html )[ "img" ];
+            string imagePath = image.First().Attr( "src" );
+
+            return imagePath;
         }
     }
 }

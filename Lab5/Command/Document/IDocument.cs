@@ -1,13 +1,11 @@
 ﻿using Command.Document.Item;
-using Command.Image;
-using Command.Paragraph;
 
 namespace Command.Document
 {
     public interface IDocument
     {
-        void InsertParagraph( IParagraph paragraph, int? position = null );
-        void InsertImage( IImage image, int? position = null );
+        void InsertParagraph( string text, int? position = null );
+        void InsertImage( string path, int weight, int height, int? position = null );
         int ItemsCount { get; }
         DocumentItem GetItem( int index );
         void DeleteItem( int index );
@@ -17,5 +15,6 @@ namespace Command.Document
         bool CanRedo { get; }
         void Redo();
         void Save( string path );
+        IDocumentHistory DocumentHistory { get; }
     }
 }

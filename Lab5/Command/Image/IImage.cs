@@ -1,6 +1,8 @@
-﻿namespace Command.Image
+﻿using System;
+
+namespace Command.Image
 {
-    public interface IImage
+    public interface IImage : IDisposable
     {
         int Width { get; }
         int Height { get; }

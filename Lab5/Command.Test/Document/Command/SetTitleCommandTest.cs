@@ -1,7 +1,5 @@
 ﻿using Command.Document;
 using Command.Document.Command;
-using Command.Document.Item;
-using Command.Image;
 using Moq;
 using Xunit;
 

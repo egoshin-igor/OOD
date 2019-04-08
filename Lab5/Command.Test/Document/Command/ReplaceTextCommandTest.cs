@@ -1,8 +1,6 @@
 ﻿using Command.Document;
 using Command.Document.Command;
 using Command.Document.Item;
-using Command.Image;
-using Command.Paragraph;
 using Moq;
 using Xunit;
 
@@ -10,11 +8,15 @@ namespace Command.Test.Document.Command
 {
     public class ReplaceTextCommandTest
     {
-        readonly Mock<IDocument> _documentMock;
+        private readonly Mock<IDocument> _documentMock;
+        private readonly Mock<DocumentHistory> _documentHistoryMock;
 
         public ReplaceTextCommandTest()
         {
+            _documentHistoryMock = new Mock<DocumentHistory>();
+            _documentHistoryMock.Setup( h => h.AddToHistory( It.IsAny<ICommand>() ) );
             _documentMock = new Mock<IDocument>();
+            _documentMock.SetupGet( d => d.DocumentHistory ).Returns( _documentHistoryMock.Object );
         }
 
         [Fact]

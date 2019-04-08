@@ -9,12 +9,11 @@ namespace Command.Test.Menu
 {
     public class MenuTest
     {
-        private Mock<IDocument> _documentMock = new Mock<IDocument>();
         private MenuClass _menu;
 
         public MenuTest()
         {
-            _menu = new MenuClass( _documentMock.Object );
+            _menu = new MenuClass();
         }
 
         [Fact]
@@ -43,23 +42,20 @@ namespace Command.Test.Menu
         public void Execute_CorrectExecute()
         {
             // Arrange
-            string command = "InsertImage img.png";
-            bool isInsertImageCalled = false;
-            _documentMock
-                .Setup( d => d.InsertImage( It.IsAny<IImage>(), It.IsAny<int?>() ) )
-                .Callback( () => isInsertImageCalled = true );
+            string command = "InsertImage end 2 2 img.png";
+            bool isCommandExecuted = false;
 
             _menu.AddItem(
                 "InsertImage",
                 description: "",
-                ( shortcut, document ) => document
-                    .InsertImage( new Image.Image( path: "", fileExtension: "", weidht: 1, height: 1 ) )
+                ( commandParams ) => isCommandExecuted = true
             );
 
             // Act
             _menu.Execute( command );
+
             // Assert
-            Assert.True( isInsertImageCalled );
+            Assert.True( isCommandExecuted );
         }
     }
 }
