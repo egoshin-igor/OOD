@@ -1,6 +1,6 @@
 ﻿namespace Adapter.ModernGrapicsLib
 {
-    public class RGBAColor
+    class RGBAColor
     {
         public float R { get; }
         public float G { get; }
@@ -9,9 +9,9 @@
 
         public RGBAColor( float r, float g, float b, float a )
         {
-            if ( !IsValidRGBAComponent( r ) || !IsValidRGBAComponent( g ) || !IsValidRGBAComponent( b ) || !IsValidRGBAComponent( a ) )
+            if ( !IsValid( r ) || !IsValid( g ) || !IsValid( b ) || !IsValid( a ) )
             {
-                throw new GraphicsLogicalException( $"RGBA components must be beetwen 0 and 1" );
+                throw new GraphicsLogicalException( $"RGBA numbers can be beetwen 0 and 1" );
             }
 
             R = r;
@@ -20,7 +20,7 @@
             A = a;
         }
 
-        private bool IsValidRGBAComponent( float number )
+        private bool IsValid( float number )
         {
             if ( number < 0 || number > 1 )
             {

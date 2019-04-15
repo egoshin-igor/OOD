@@ -8,83 +8,79 @@ namespace Command.Menu
 {
     public class MenuSetup
     {
-        private readonly Menu _menu;
         private readonly IDocument _document;
 
         public MenuSetup()
         {
             IDocumentHistory documentHistory = new DocumentHistory();
             _document = new Document.Document( documentHistory );
-            _menu = new Menu();
         }
 
-        public Menu GetSetuped()
+        public void Setup( Menu menu )
         {
             string insertParagraphDescription
                 = $"Print <InsertParagraph> <position|end> <text> to save paragraph on document";
-            _menu.AddItem( shortcut: "InsertParagraph", insertParagraphDescription, InsertParagraphCommandExecutor );
+            menu.AddItem( shortcut: "InsertParagraph", insertParagraphDescription, InsertParagraphCommandExecutor );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "Help",
                 description: "Print <Help> to show command info",
-                ( arguments ) => Console.WriteLine( _menu.GetCommandsInfo() )
+                ( arguments ) => Console.WriteLine( menu.GetCommandsInfo() )
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "Save",
                 description: "Print <Save> <path> to save document",
                 SaveCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "SetTitle",
                 description: "Print <SetTitle> <title> to define your document title",
                 SetTitleCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "ReplaceText",
                 description: "Print <ReplaceText> <position> <text> to replace selected text from paragraph",
                 ReplaceTextCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "DeleteItem",
                 description: "Print <DeleteItem> <position> to delete item on position",
                 DeleteItemCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "Undo",
                 description: "Print <Undo> to undo previous command",
                 UndoCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "Redo",
                 description: "Print <Redo> to redo command",
                 RedoCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "List",
                 description: "Print <List> to show document items",
                 ListCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "InsertImage",
-                description: "Print <InsertImage> <position> <weight> <height> <path> to insert image to document",
+                description: "Print <InsertImage> <position|end> <weight> <height> <path> to insert image to document",
                 InsertImageCommandExecutor
             );
 
-            _menu.AddItem(
+            menu.AddItem(
                 shortcut: "ResizeImage",
                 description: "Print <ResizeImage> <position> <weight> <height> to resize image",
                 ResizeImageCommandExecutor
             );
-
-            return _menu;
         }
 
         private void InsertParagraphCommandExecutor( string commandParams )

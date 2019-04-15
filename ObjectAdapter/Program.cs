@@ -2,7 +2,7 @@
 using Adapter.Adapter;
 using Adapter.GraphicsLib;
 using Adapter.ModernGrapicsLib;
-using Adapter.ShapeDrawingLib;
+using ObjectAdapter.ShapeDrawingLib;
 
 namespace Adapter
 {
@@ -32,11 +32,10 @@ namespace Adapter
             var triangle = new Triangle(
                 new ShapeDrawingLib.Point( 10, 15 ),
                 new ShapeDrawingLib.Point( 100, 200 ),
-                new ShapeDrawingLib.Point( 150, 250 ),
-                0xFFFFFF
+                new ShapeDrawingLib.Point( 150, 250 )
             );
 
-            var rectangle = new Rectangle( new ShapeDrawingLib.Point( 30, 40 ), 18, 24, 0xEEAA11 );
+            var rectangle = new Rectangle( new ShapeDrawingLib.Point( 30, 40 ), 18, 24 );
             Console.WriteLine( "Triangle:" );
             painter.Draw( triangle );
             Console.WriteLine( "Rectangle" );
@@ -56,19 +55,15 @@ namespace Adapter
             var modernGrapicsObjectAdapter = new ModernGrapicsObjectAdapter( renderer );
             var painter = new CanvasPainter( modernGrapicsObjectAdapter );
 
-            modernGrapicsObjectAdapter.BeginDraw();
             PaintPicture( painter );
-            modernGrapicsObjectAdapter.EndDraw();
         }
 
         private static void PaintPictureOnModernGraphicsRendererWithClassAdapter()
         {
-            var modernGrapicsClassAdapter = new ModernGrapicsClassAdapter( Console.Out );
-            var painter = new CanvasPainter( modernGrapicsClassAdapter );
+            var modernGrapicsObjectAdapter = new ModernGrapicsClassAdapter( Console.Out );
+            var painter = new CanvasPainter( modernGrapicsObjectAdapter );
 
-            modernGrapicsClassAdapter.BeginDraw();
             PaintPicture( painter );
-            modernGrapicsClassAdapter.EndDraw();
         }
     }
 }

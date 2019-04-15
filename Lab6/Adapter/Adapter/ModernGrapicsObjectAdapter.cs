@@ -2,6 +2,7 @@
 using System.Globalization;
 using Adapter.GraphicsLib;
 using Adapter.ModernGrapicsLib;
+using Adapter.Util;
 
 namespace Adapter.Adapter
 {
@@ -18,13 +19,9 @@ namespace Adapter.Adapter
 
         public void LineTo( int x, int y )
         {
-            _modernGraphicsRenderer.BeginDraw();
-
             Point newPosition = new Point( x, y );
             _modernGraphicsRenderer.DrawLine( _startPosition, newPosition, _rgbaColor );
             _startPosition = newPosition;
-
-            _modernGraphicsRenderer.EndDraw();
         }
 
         public void MoveTo( int x, int y )
@@ -34,18 +31,22 @@ namespace Adapter.Adapter
 
         public void SetColor( uint rgbColor )
         {
-            string hex = rgbColor.ToString( "x6" );
-            float r = ToRGBAColorPart( hex.Substring( 0, 2 ) );
-            float g = ToRGBAColorPart( hex.Substring( 2, 2 ) );
-            float b = ToRGBAColorPart( hex.Substring( 4, 2 ) );
-            float a = 1;
-
-            _rgbaColor = new RGBAColor( r, g, b, a );
+            _rgbaColor = RGBAConverter.Convert( rgbColor );
         }
 
-        private float ToRGBAColorPart( string colorPartString )
+        public void BeginDraw()
         {
-            var colorPart = int.Parse( colorPartString, NumberStyles.AllowHexSpecifier );
+            _modernGraphicsRenderer.BeginDraw();
+        }
+
+        public void EndDraw()
+        {
+            _modernGraphicsRenderer.EndDraw();
+        }
+
+        private float ToRGBAColorPart( string hexColorPart )
+        {
+            var colorPart = int.Parse( hexColorPart, NumberStyles.AllowHexSpecifier );
             var result = ( ( double )colorPart ) / 255;
 
             return ( float )Math.Round( result, 2 );

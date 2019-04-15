@@ -16,7 +16,7 @@ namespace Adapter.GraphicsLib
 
         public void SetColor( uint rgbColor )
         {
-            Console.WriteLine( $"SetColor (#{rgbColor.ToString( "x6" )})" );
+            Console.WriteLine( $"SetColor ({rgbColor.ToString( "x" )})" );
         }
     }
 }
