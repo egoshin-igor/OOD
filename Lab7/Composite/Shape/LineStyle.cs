@@ -3,47 +3,59 @@ using System.Drawing;
 
 namespace Composite.Shape
 {
-    public class LineStyle : IEquatable<LineStyle>
+    public class LineStyle : BaseStyle
     {
-        public bool IsEnabled { get; private set; }
-        public Color Color { get; set; }
-        public float Thickness { get; set; }
+        private float _thickness;
+
+        public event Action OnThicknessChange;
+
+        public float Thickness
+        {
+            get => _thickness;
+            set
+            {
+                _thickness = value;
+                OnThicknessChange?.Invoke();
+            }
+        }
+
+        private LineStyle()
+        {
+        }
 
         public LineStyle( Color color, float thickness )
+            : base( color )
         {
-            Color = color;
             Thickness = thickness;
-            IsEnabled = true;
         }
 
-        public void Enable()
+        public new LineStyle Copy()
         {
-            IsEnabled = true;
-        }
-
-        public LineStyle Copy()
-        {
-            var copy = new LineStyle( Color, Thickness )
+            var copy = new LineStyle
             {
-                IsEnabled = this.IsEnabled
+                Color = this.Color,
+                IsEnabled = this.IsEnabled,
+                Thickness = this.Thickness
             };
 
             return copy;
         }
 
+        public override bool Equals( object obj )
+        {
+            var style = obj as LineStyle;
+
+            return base.Equals( style );
+        }
+
         public bool Equals( LineStyle other )
         {
-            if ( other == null )
-            {
-                return false;
-            }
+            return base.Equals( other ) && Thickness == other.Thickness;
+        }
 
-            if ( this == other )
-            {
-                return true;
-            }
-
-            return Color == other.Color && IsEnabled == other.IsEnabled && Thickness == other.Thickness;
+        public override int GetHashCode()
+        {
+            return HashCode.Combine( base.GetHashCode(), _thickness );
         }
     }
 }

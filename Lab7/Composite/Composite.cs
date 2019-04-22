@@ -9,42 +9,55 @@ namespace Composite
     {
         public static void Main( string[] args )
         {
-            var slide = new Slide( width: 100, height: 100 );
-            var canvas = new TextCanvas();
-
-            slide.BackgroundColor = Color.Beige;
-            slide.InsertShape( GetRectangle(), 0 );
-            slide.InsertShape( GetEllipse(), 1 );
-            slide.InsertShape( GetTriangle(), 2 );
+            var slide = new Slide();
+            var canvas = new GrapicalCanvas( width: 1000, height: 1000 );
+            InsertTractor( slide );
+            InsertField( slide );
+            InsertSun( slide );
 
             slide.Draw( canvas );
+            canvas.Save( "../../../image.png" );
         }
 
-        public static Rectangle GetRectangle()
+        public static void InsertTractor( Slide slide )
         {
-            var frame = new Rect( left: 30, top: -30, width: 20, height: 30 );
-            var lineStyle = new LineStyle( Color.Black, thickness: 1 );
-            var fillStyle = new FillStyle( Color.Empty );
-
-            return new Rectangle( frame, lineStyle, fillStyle );
-        }
-
-        public static Ellipse GetEllipse()
-        {
-            var frame = new Rect( left: 0, top: -100, width: 44, height: 42 );
-            var lineStyle = new LineStyle( Color.Black, thickness: 2 );
-            var fillStyle = new FillStyle( Color.Azure );
-
-            return new Ellipse( frame, lineStyle, fillStyle );
-        }
-
-        public static Triangle GetTriangle()
-        {
-            var frame = new Rect( left: 61, top: -44, width: 11, height: 22 );
+            var frame = new Rect( left: 50, top: 900, width: 350, height: 130 );
             var lineStyle = new LineStyle( Color.Black, thickness: 3 );
-            var fillStyle = new FillStyle( Color.Empty );
+            var fillStyle = new BaseStyle( Color.Blue );
 
-            return new Triangle( frame, lineStyle, fillStyle );
+            slide.InsertShape( new Rectangle( frame, lineStyle, fillStyle ), 0 );
+
+            fillStyle = new BaseStyle( Color.Black );
+            frame = new Rect( left: 55, top: 940, width: 70, height: 70 );
+            slide.InsertShape( new Ellipse( frame, lineStyle, fillStyle ), 0 );
+            frame = new Rect( left: 325, top: 940, width: 70, height: 70 );
+            slide.InsertShape( new Ellipse( frame, lineStyle, fillStyle ), 0 );
+
+            frame = new Rect( left: 55, top: 770, width: 20, height: 70 );
+            slide.InsertShape( new Rectangle( frame, lineStyle, fillStyle ), 0 );
+
+            fillStyle = new BaseStyle( Color.Empty );
+            lineStyle = new LineStyle( Color.Black, thickness: 6 );
+            frame = new Rect( left: 268.5f, top: 770, width: 130, height: 100 );
+            slide.InsertShape( new Rectangle( frame, lineStyle, fillStyle ), 0 );
+        }
+
+        public static void InsertField( Slide slide )
+        {
+            var frame = new Rect( left: 0, top: 1000, width: 1000, height: 250 );
+            var lineStyle = new LineStyle( Color.Green, thickness: 0 );
+            var fillStyle = new BaseStyle( Color.Green );
+
+            slide.InsertShape( new Rectangle( frame, lineStyle, fillStyle ), 0 );
+        }
+
+        public static void InsertSun( Slide slide )
+        {
+            var frame = new Rect( left: 900, top: 100, width: 100, height: 100 );
+            var lineStyle = new LineStyle( Color.Yellow, thickness: 0 );
+            var fillStyle = new BaseStyle( Color.Yellow );
+
+            slide.InsertShape( new Ellipse( frame, lineStyle, fillStyle ), 0 );
         }
     }
 }

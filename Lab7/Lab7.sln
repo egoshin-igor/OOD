@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Composite", "Composite\Composite.csproj", "{34EA3FFC-5E90-4949-BE8B-85D3FF8A642B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Composite.Tests", "Composite.Tests\Composite.Tests.csproj", "{D052E33E-FD9F-413D-B95D-EED4D5A8578C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Composite.Tests", "Composite.Tests\Composite.Tests.csproj", "{D052E33E-FD9F-413D-B95D-EED4D5A8578C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

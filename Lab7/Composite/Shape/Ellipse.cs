@@ -4,7 +4,7 @@ namespace Composite.Shape
 {
     public class Ellipse : BaseShape
     {
-        public Ellipse( Rect frame, LineStyle lineStyle, FillStyle fillStyle )
+        public Ellipse( Rect frame, LineStyle lineStyle = null, BaseStyle fillStyle = null )
             : base( frame, lineStyle, fillStyle )
         {
         }

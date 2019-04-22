@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 
 namespace Composite.Canvas
 {
-    public interface ICanvas
+    public interface ICanvas : IDisposable
     {
         float LineThickness { set; }
         Color FillColor { set; }

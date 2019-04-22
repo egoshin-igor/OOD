@@ -170,7 +170,7 @@ namespace Command.Test.Document
             // Assert
             string html = File.ReadAllText( temporaryPath );
             string imagePath = GetFirstImagePath( html );
-            Assert.Equal( expectedReferencePathBegining, imagePath.Substring( 0, expectedReferencePathBegining.Length ) );
+            Assert.StartsWith( expectedReferencePathBegining, imagePath );
         }
 
         private string GetFirstImagePath( string html )

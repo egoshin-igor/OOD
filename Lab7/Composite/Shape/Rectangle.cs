@@ -5,7 +5,7 @@ namespace Composite.Shape
 {
     public class Rectangle : BaseShape
     {
-        public Rectangle( Rect frame, LineStyle lineStyle, FillStyle fillStyle )
+        public Rectangle( Rect frame, LineStyle lineStyle = null, BaseStyle fillStyle = null )
             : base( frame, lineStyle, fillStyle )
         {
         }

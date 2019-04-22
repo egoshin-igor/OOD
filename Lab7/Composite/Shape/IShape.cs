@@ -5,8 +5,8 @@ namespace Composite.Shape
     public interface IShape
     {
         Rect Frame { get; set; }
-        LineStyle LineStyle { get; set; } // TODO: У стилей не должно быть сеттеров
-        FillStyle FillStyle { get; set; }
+        LineStyle LineStyle { get; }
+        BaseStyle FillStyle { get; }
         void Draw( ICanvas canvas );
     }
 }

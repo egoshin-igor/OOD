@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Composite.Canvas;
 
@@ -8,12 +9,13 @@ namespace Composite.Shape
     public class GroupShape : IGroupShape
     {
         private readonly List<IShape> _shapes = new List<IShape>();
+        private readonly LineStyle _lineStyle = new LineStyle( Color.Empty, thickness: 0 );
 
         public int ShapesCount => _shapes.Count;
 
         public Rect Frame { get => GetFrame(); set => SetFrame( value ); }
-        public LineStyle LineStyle { get => GetLineStyle(); set => SetLineStyle( value ); }
-        public FillStyle FillStyle { get => GetFillStyle(); set => SetFillStyle( value ); }
+        public LineStyle LineStyle { get => GetLineStyle(); }
+        public BaseStyle FillStyle { get => GetFillStyle(); }
 
         public void Draw( ICanvas canvas )
         {
@@ -31,6 +33,7 @@ namespace Composite.Shape
         public void InsertShape( IShape shape, int index )
         {
             _shapes.Insert( index, shape );
+
         }
 
         public void RemoveShapeAtIndex( int index )
@@ -44,20 +47,34 @@ namespace Composite.Shape
             {
                 return null;
             }
+            int firstDefinedFrameIndex = _shapes.FindIndex( s => s.Frame != null );
+            if ( firstDefinedFrameIndex == -1 )
+            {
+                return null;
+            }
 
-            Rect firstFrame = _shapes[ 0 ].Frame;
-            float left = firstFrame.Left;
-            float top = firstFrame.Top;
-            float width = firstFrame.Width;
-            float height = firstFrame.Height;
+            Rect firstDefinedFrame = _shapes[ firstDefinedFrameIndex ].Frame;
+            float left = firstDefinedFrame.Left;
+            float top = firstDefinedFrame.Top;
+            float width = firstDefinedFrame.Width;
+            float height = firstDefinedFrame.Height;
 
-            for ( int i = 1; i < ShapesCount; i++ )
+            for ( int i = firstDefinedFrameIndex + 1; i < ShapesCount; i++ )
             {
                 Rect currentFrame = _shapes[ i ].Frame;
-                Math.Min( left, currentFrame.Left );
-                Math.Max( top, currentFrame.Top );
-                Math.Max( width, currentFrame.Width );
-                Math.Max( height, currentFrame.Height );
+                if ( currentFrame == null )
+                {
+                    continue;
+                }
+
+                float maxRight = Math.Max( left + width, currentFrame.Left + currentFrame.Width );
+                float minTop = Math.Min( top - height, currentFrame.Top - currentFrame.Height );
+
+                left = Math.Min( left, currentFrame.Left );
+                top = Math.Max( top, currentFrame.Top );
+                width = maxRight - left;
+                height = top - minTop;
+
             }
 
             return new Rect( left, top, width, height );
@@ -65,6 +82,11 @@ namespace Composite.Shape
 
         private void SetFrame( Rect newFrame )
         {
+            if ( Frame == null )
+            {
+                return;
+            }
+
             Rect currentFrame = Frame;
             float widthScale = newFrame.Width / currentFrame.Width;
             float heightScale = newFrame.Height / currentFrame.Height;
@@ -86,41 +108,84 @@ namespace Composite.Shape
 
         private LineStyle GetLineStyle()
         {
+            LineStyle result = null;
+
             if ( ShapesCount == 0 )
             {
-                return null;
+                return result;
             }
 
             LineStyle firstLineStyle = _shapes.First().LineStyle;
+            bool isAllStylesEqual = _shapes.All( s => s.LineStyle.Equals( firstLineStyle ) );
+            if ( isAllStylesEqual )
+            {
+                result = firstLineStyle.Copy();
+                result.OnColorChange += () => ChangeChildsLineColor( result.Color );
+                result.OnEnablingStateChange += () => ChangeChildsLineStyleEnablingState( result.IsEnabled );
+                result.OnThicknessChange += () => ChangeChildsLineThickness( result.Thickness );
+            }
 
-            return _shapes.All( s => s.LineStyle == firstLineStyle ) ? firstLineStyle.Copy() : null;
+            return result;
         }
 
-        private void SetLineStyle( LineStyle lineStyle )
+        private void ChangeChildsLineColor( Color color )
         {
             foreach ( IShape shape in _shapes )
             {
-                shape.LineStyle = lineStyle;
+                shape.LineStyle.Color = color;
             }
         }
 
-        private FillStyle GetFillStyle()
+        private void ChangeChildsLineStyleEnablingState( bool enable )
         {
+            foreach ( IShape shape in _shapes )
+            {
+                shape.LineStyle.Enable( enable );
+            }
+        }
+
+        private void ChangeChildsLineThickness( float thickness )
+        {
+            foreach ( IShape shape in _shapes )
+            {
+                shape.LineStyle.Thickness = thickness;
+            }
+        }
+
+        private BaseStyle GetFillStyle()
+        {
+            BaseStyle result = null;
+
             if ( ShapesCount == 0 )
             {
-                return null;
+                return result;
             }
 
-            FillStyle firstLineStyle = _shapes.First().FillStyle;
+            BaseStyle firstFillStyle = _shapes.First().FillStyle;
+            bool isAllStylesEqual = _shapes.All( s => s.FillStyle.Equals( firstFillStyle ) );
+            if ( isAllStylesEqual )
+            {
+                result = firstFillStyle.Copy();
+                result.OnColorChange += () => ChangeChildsFillColor( result.Color );
+                result.OnEnablingStateChange += () => ChangeChildsFillStyleEnablingState( result.IsEnabled );
+            }
 
-            return _shapes.All( s => s.FillStyle == firstLineStyle ) ? firstLineStyle.Copy() : null;
+            return result;
         }
 
-        private void SetFillStyle( FillStyle fillStyle )
+        private void ChangeChildsFillColor( Color color )
         {
             foreach ( IShape shape in _shapes )
             {
-                shape.FillStyle = fillStyle;
+                shape.FillStyle.Color = color;
+            }
+        }
+
+        private void ChangeChildsFillStyleEnablingState( bool enable )
+        {
+            foreach ( IShape shape in _shapes )
+            {
+                shape.FillStyle.Enable( enable );
             }
         }
     }

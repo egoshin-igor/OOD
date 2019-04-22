@@ -5,7 +5,7 @@ namespace Composite.Shape
 {
     public class Triangle : BaseShape
     {
-        public Triangle( Rect frame, LineStyle lineStyle, FillStyle fillStyle )
+        public Triangle( Rect frame, LineStyle lineStyle = null, BaseStyle fillStyle = null )
             : base( frame, lineStyle, fillStyle )
         {
         }

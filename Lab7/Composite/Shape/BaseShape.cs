@@ -6,27 +6,23 @@ namespace Composite.Shape
     public abstract class BaseShape : IShape
     {
         public Rect Frame { get; set; }
-        public LineStyle LineStyle { get; set; }
-        public FillStyle FillStyle { get; set; }
+        public LineStyle LineStyle { get; }
+        public BaseStyle FillStyle { get; }
 
-        protected BaseShape( Rect frame, LineStyle lineStyle, FillStyle fillStyle )
+        protected BaseShape( Rect frame, LineStyle lineStyle = null, BaseStyle fillStyle = null )
         {
             Frame = frame;
-            LineStyle = lineStyle;
-            FillStyle = fillStyle;
+            LineStyle = lineStyle?.Copy() ?? new LineStyle( Color.Empty, thickness: 0 );
+            FillStyle = fillStyle?.Copy() ?? new BaseStyle( Color.Empty );
         }
 
         public abstract void Draw( ICanvas canvas );
 
         protected void SetStyles( ICanvas canvas )
         {
-            canvas.LineColor = LineStyle != null && LineStyle.IsEnabled ? LineStyle.Color : Color.Empty;
-            if ( LineStyle != null )
-            {
-                canvas.LineThickness = LineStyle.Thickness;
-            }
-
-            canvas.FillColor = FillStyle != null && FillStyle.IsEnabled ? FillStyle.Color : Color.Empty;
+            canvas.LineColor = LineStyle.IsEnabled ? LineStyle.Color : Color.Empty;
+            canvas.LineThickness = LineStyle.Thickness;
+            canvas.FillColor = FillStyle.IsEnabled ? FillStyle.Color : Color.Empty;
         }
     }
 }
