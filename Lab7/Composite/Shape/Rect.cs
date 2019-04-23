@@ -21,7 +21,7 @@ namespace Composite.Shape
         {
             var rect = obj as Rect;
 
-            return base.Equals( rect );
+            return Equals( rect );
         }
 
         public bool Equals( Rect other )

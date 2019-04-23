@@ -9,7 +9,6 @@ namespace Composite.Shape
     public class GroupShape : IGroupShape
     {
         private readonly List<IShape> _shapes = new List<IShape>();
-        private readonly LineStyle _lineStyle = new LineStyle( Color.Empty, thickness: 0 );
 
         public int ShapesCount => _shapes.Count;
 
