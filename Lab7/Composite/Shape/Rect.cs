@@ -2,7 +2,7 @@
 
 namespace Composite.Shape
 {
-    public class Rect : IEquatable<Rect>
+    public struct Rect : IEquatable<Rect>
     {
         public float Left { get; }
         public float Top { get; }
@@ -19,23 +19,17 @@ namespace Composite.Shape
 
         public override bool Equals( object obj )
         {
-            var rect = obj as Rect;
+            if ( !( obj is Rect ) )
+            {
+                return false;
+            }
+            var rect = ( Rect )obj;
 
             return Equals( rect );
         }
 
         public bool Equals( Rect other )
         {
-            if ( other == null )
-            {
-                return false;
-            }
-
-            if ( this == other )
-            {
-                return true;
-            }
-
             return Left == other.Left &&
                 Top == other.Top &&
                 Width == other.Width &&

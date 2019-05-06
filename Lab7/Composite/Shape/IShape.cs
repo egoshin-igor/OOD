@@ -4,9 +4,10 @@ namespace Composite.Shape
 {
     public interface IShape
     {
-        Rect Frame { get; set; }
-        LineStyle LineStyle { get; }
-        BaseStyle FillStyle { get; }
+        Rect? GetFrame();
+        void SetFrame( Rect rect );
+        ILineStyle LineStyle { get; }
+        IStyle FillStyle { get; }
         void Draw( ICanvas canvas );
     }
 }

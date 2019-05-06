@@ -4,7 +4,7 @@ namespace Composite.Shape
 {
     public class Ellipse : BaseShape
     {
-        public Ellipse( Rect frame, LineStyle lineStyle = null, BaseStyle fillStyle = null )
+        public Ellipse( Rect frame, ILineStyle lineStyle = null, IStyle fillStyle = null )
             : base( frame, lineStyle, fillStyle )
         {
         }
@@ -12,8 +12,9 @@ namespace Composite.Shape
         public override void Draw( ICanvas canvas )
         {
             SetStyles( canvas );
+            Rect frame = GetFrame().Value;
 
-            canvas.DrawEllipse( Frame.Left, Frame.Top, Frame.Width, Frame.Height );
+            canvas.DrawEllipse( frame.Left, frame.Top, frame.Width, frame.Height );
         }
     }
 }

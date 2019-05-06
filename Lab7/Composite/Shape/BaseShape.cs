@@ -5,15 +5,15 @@ namespace Composite.Shape
 {
     public abstract class BaseShape : IShape
     {
-        public Rect Frame { get; set; }
-        public LineStyle LineStyle { get; }
-        public BaseStyle FillStyle { get; }
+        private Rect _frame;
+        public ILineStyle LineStyle { get; }
+        public IStyle FillStyle { get; }
 
-        protected BaseShape( Rect frame, LineStyle lineStyle = null, BaseStyle fillStyle = null )
+        protected BaseShape( Rect frame, ILineStyle lineStyle = null, IStyle fillStyle = null )
         {
-            Frame = frame;
-            LineStyle = lineStyle?.Copy() ?? new LineStyle( Color.Empty, thickness: 0 );
-            FillStyle = fillStyle?.Copy() ?? new BaseStyle( Color.Empty );
+            _frame = frame;
+            LineStyle = lineStyle ?? new LineStyle( Color.Empty, thickness: 0 );
+            FillStyle = fillStyle ?? new BaseStyle( Color.Empty );
         }
 
         public abstract void Draw( ICanvas canvas );
@@ -24,5 +24,8 @@ namespace Composite.Shape
             canvas.LineThickness = LineStyle.Thickness;
             canvas.FillColor = FillStyle.IsEnabled ? FillStyle.Color : Color.Empty;
         }
+
+        public Rect? GetFrame() => _frame;
+        public void SetFrame( Rect frame ) => _frame = frame;
     }
 }

@@ -119,10 +119,10 @@ namespace Composite.Tests.Shape
             var groupShape = new GroupShape();
 
             // Act
-            Rect frame = groupShape.Frame;
+            Rect? result = groupShape.GetFrame();
 
             // Assert
-            Assert.Null( frame );
+            Assert.Null( result );
         }
 
         [Fact]
@@ -134,10 +134,10 @@ namespace Composite.Tests.Shape
             groupShape.InsertShape( shape, 0 );
 
             // Act
-            Rect result = groupShape.Frame;
+            Rect? result = groupShape.GetFrame();
 
             // Assert
-            Assert.Equal( shape.Frame, result );
+            Assert.Equal( shape.GetFrame(), result );
         }
 
         [Fact]
@@ -152,7 +152,7 @@ namespace Composite.Tests.Shape
             var expectedFrame = new Rect( 0, 2, 2.5f, 2 );
 
             // Act
-            Rect result = groupShape.Frame;
+            Rect? result = groupShape.GetFrame();
 
             // Assert
             Assert.Equal( expectedFrame, result );
@@ -174,9 +174,10 @@ namespace Composite.Tests.Shape
             var expectedFrame = new Rect( 0, 2, 2.5f, 2 );
 
             // Act
-            Rect result = groupShapeTwo.Frame;
+            Rect? result = groupShapeTwo.GetFrame();
 
             // Assert
+            Assert.True( result.HasValue );
             Assert.Equal( expectedFrame, result );
         }
 
@@ -190,10 +191,11 @@ namespace Composite.Tests.Shape
             var expectedFrame = new Rect( 3, 3, 3, 3 );
 
             // Act
-            groupShape.Frame = expectedFrame;
-            Rect result = groupShape.Frame;
+            groupShape.SetFrame( expectedFrame );
+            Rect? result = groupShape.GetFrame();
 
             // Assert
+            Assert.True( result.HasValue );
             Assert.Equal( expectedFrame, result );
         }
 
@@ -207,10 +209,11 @@ namespace Composite.Tests.Shape
             var expectedChildFrame = new Rect( 3, 3, 3, 3 );
 
             // Act
-            groupShape.Frame = new Rect( 3, 3, 3, 3 );
-            Rect result = groupShape.GetShapeAtIndex( 0 ).Frame;
+            groupShape.SetFrame( new Rect( 3, 3, 3, 3 ) );
+            Rect? result = groupShape.GetShapeAtIndex( 0 ).GetFrame();
 
             // Assert
+            Assert.True( result.HasValue );
             Assert.Equal( expectedChildFrame, result );
         }
 
@@ -227,11 +230,12 @@ namespace Composite.Tests.Shape
             var expectedEllipseFrame = new Rect( 0.4f, 1f, 0.6f, 0.5f );
 
             // Act
-            groupShape.Frame = new Rect( 0, 1, 1, 1 );
-            Rect rectangleFrame = groupShape.GetShapeAtIndex( 0 ).Frame;
-            Rect ellipseFrame = groupShape.GetShapeAtIndex( 1 ).Frame;
+            groupShape.SetFrame( new Rect( 0, 1, 1, 1 ) );
+            Rect? rectangleFrame = groupShape.GetShapeAtIndex( 0 ).GetFrame();
+            Rect? ellipseFrame = groupShape.GetShapeAtIndex( 1 ).GetFrame();
 
             // Assert
+            Assert.True( rectangleFrame.HasValue && ellipseFrame.HasValue );
             Assert.Equal( expectedRectangleFrame, rectangleFrame );
             Assert.Equal( expectedEllipseFrame, ellipseFrame );
         }
@@ -244,10 +248,10 @@ namespace Composite.Tests.Shape
             var expectedStyle = new LineStyle( Color.Empty, thickness: 0 );
 
             // Act
-            LineStyle result = groupShape.LineStyle;
+            ILineStyle result = groupShape.LineStyle;
 
             // Assert
-            Assert.Equal( expectedStyle, result );
+            Assert.True( Equals( expectedStyle, result ) );
         }
 
         [Fact]
@@ -258,7 +262,7 @@ namespace Composite.Tests.Shape
             var expectedStyle = new BaseStyle( Color.Empty );
 
             // Act
-            BaseStyle result = groupShape.FillStyle;
+            IStyle result = groupShape.FillStyle;
 
             // Assert
             Assert.Equal( expectedStyle, result );
@@ -272,10 +276,10 @@ namespace Composite.Tests.Shape
             GroupShape groupShape = GetGroupShape( 3, lineStyle );
 
             // Act
-            LineStyle result = groupShape.LineStyle;
+            ILineStyle result = groupShape.LineStyle;
 
             // Assert
-            Assert.Equal( lineStyle, result );
+            Assert.True( Equals( lineStyle, result ) );
         }
 
         [Fact]
@@ -286,7 +290,7 @@ namespace Composite.Tests.Shape
             GroupShape groupShape = GetGroupShape( 3, lineStyle: null, fillStyle );
 
             // Act
-            BaseStyle result = groupShape.FillStyle;
+            IStyle result = groupShape.FillStyle;
 
             // Assert
             Assert.Equal( fillStyle, result );
@@ -301,7 +305,7 @@ namespace Composite.Tests.Shape
             groupShape.GetShapeAtIndex( 0 ).FillStyle.Color = Color.Blue;
 
             // Act
-            BaseStyle result = groupShape.FillStyle;
+            IStyle result = groupShape.FillStyle;
 
             // Assert
             Assert.Null( result );
@@ -316,10 +320,10 @@ namespace Composite.Tests.Shape
             groupShape.InsertShape( GetGroupShape( 3, lineStyle ), 0 );
 
             // Act
-            LineStyle result = groupShape.LineStyle;
+            ILineStyle result = groupShape.LineStyle;
 
             // Assert
-            Assert.Equal( lineStyle, result );
+            Assert.True( Equals( lineStyle, result ) );
         }
 
         [Fact]
@@ -331,7 +335,7 @@ namespace Composite.Tests.Shape
             groupShape.InsertShape( GetGroupShape( 3, lineStyle ), 0 );
 
             // Act
-            LineStyle result = groupShape.LineStyle;
+            ILineStyle result = groupShape.LineStyle;
             result.Color = Color.Red;
 
             // Assert
@@ -343,7 +347,7 @@ namespace Composite.Tests.Shape
         }
 
         [Fact]
-        public void GetLineStyle_ParentStyleWillBeNullFromDefinedStyle_ParentStyleEqualsNull()
+        public void GetLineStyle_ChildStyleChangeColor_ParentStyleColorIsEmpty()
         {
             // Arrange
             var lineStyle = new LineStyle( Color.Black, thickness: 1 );
@@ -353,10 +357,10 @@ namespace Composite.Tests.Shape
             childShape.LineStyle.Color = Color.White;
 
             // Act
-            LineStyle result = groupShape.LineStyle;
+            ILineStyle result = groupShape.LineStyle;
 
             // Assert
-            Assert.Null( result );
+            Assert.Equal( Color.Empty, result.Color );
         }
 
 
@@ -372,6 +376,16 @@ namespace Composite.Tests.Shape
             }
 
             return result;
+        }
+
+        private bool Equals( IStyle first, IStyle second )
+        {
+            return first.Color == second.Color && first.IsEnabled == second.IsEnabled;
+        }
+
+        private bool Equals( ILineStyle first, ILineStyle second )
+        {
+            return Equals( first as IStyle, second as IStyle ) && first.Thickness == second.Thickness;
         }
     }
 }
