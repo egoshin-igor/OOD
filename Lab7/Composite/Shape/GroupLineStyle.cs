@@ -5,22 +5,27 @@ namespace Composite.Shape
 {
     class GroupLineStyle : GroupStyle, ILineStyle
     {
-        public float Thickness// ширина не 0
+        public float Thickness
         {
             get
             {
-                if ( _styles.Count() == 0 )
+                List<IStyle> styles = _styles.ToList();
+                if ( styles.Count == 0 )
                 {
                     return 0;
                 }
 
-                IEnumerable<ILineStyle> lineStyles = _styles.Select( s => s as ILineStyle );
+                IEnumerable<ILineStyle> lineStyles = styles.Select( s => s as ILineStyle );
                 ILineStyle firstStyle = lineStyles.First();
                 return lineStyles.All( s => s.Thickness == firstStyle.Thickness ) ? firstStyle.Thickness : 0;
             }
             set
             {
-
+                IEnumerable<ILineStyle> lineStyles = _styles.Select( s => s as ILineStyle );
+                foreach ( ILineStyle style in lineStyles )
+                {
+                    style.Thickness = value;
+                }
             }
         }
 

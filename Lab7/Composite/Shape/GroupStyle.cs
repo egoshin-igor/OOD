@@ -12,13 +12,14 @@ namespace Composite.Shape
         {
             get
             {
-                if ( _styles.Count() == 0 )
+                List<IStyle> styles = _styles.ToList();
+                if ( styles.Count == 0 )
                 {
                     return true;
                 }
 
-                IStyle firstStyle = _styles.First();
-                return _styles.All( s => s.IsEnabled == firstStyle.IsEnabled );
+                IStyle firstStyle = styles.First();
+                return styles.All( s => s.IsEnabled == firstStyle.IsEnabled );
             }
         }
 
@@ -26,13 +27,14 @@ namespace Composite.Shape
         {
             get
             {
-                if ( _styles.Count() == 0 )
+                List<IStyle> styles = _styles.ToList();
+                if ( styles.Count == 0 )
                 {
                     return Color.Empty;
                 }
 
-                IStyle firstStyle = _styles.First();
-                return _styles.All( s => s.Color == firstStyle.Color ) ? firstStyle.Color : Color.Empty;
+                IStyle firstStyle = styles.First();
+                return styles.All( s => s.Color == firstStyle.Color ) ? firstStyle.Color : Color.Empty;
             }
             set
             {

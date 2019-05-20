@@ -64,6 +64,12 @@ namespace GumballMachine.Menu
                 AddBalls
             );
 
+            menu.AddItem(
+                shortcut: "MachineInfo",
+                description: "Print <MachineInfo> to know the details of the machine",
+                ( args ) => Console.WriteLine( _machine.ToString() )
+            );
+
             return menu;
         }
 

@@ -188,6 +188,23 @@ namespace GumballMachine.Tests.GumbalMachineWithState
             Assert.Equal( 0u, _gumballMachine.BallsCount );
             _testOutputHelper.WriteLine( _gumballMachine.ToString() + "\n-----------" );
         }
+
+        [Fact]
+        public void AddBalls_InDifferentMachineStates_AddingsProceddedCorrectly()
+        {
+            _testOutputHelper.WriteLine( _gumballMachine.ToString() + "\n-----------" );
+            _gumballMachine.AddBalls( 1 );
+            Assert.Equal( 1u, _gumballMachine.BallsCount );
+            _gumballMachine.InsertQuarter();
+            _gumballMachine.AddBalls( 1 );
+            Assert.Equal( 2u, _gumballMachine.BallsCount );
+            _gumballMachine.TurnCrank();
+            Assert.Equal( 1u, _gumballMachine.BallsCount );
+            _gumballMachine.EjectQuarter();
+            _gumballMachine.AddBalls( 1 );
+            Assert.Equal( 2u, _gumballMachine.BallsCount );
+            _testOutputHelper.WriteLine( _gumballMachine.ToString() + "\n-----------" );
+        }
     }
 
     public class GumbalMachineWithStateTest : GumbalMachineTest

@@ -1,6 +1,4 @@
-﻿using GumballMachine.GumbalMachineWithState.States;
-
-namespace GumballMachine.GumbalMachineWithState
+﻿namespace GumballMachine.GumbalMachineWithState
 {
     public class GumballMachine : IGumbalMachine
     {
@@ -35,7 +33,7 @@ namespace GumballMachine.GumbalMachineWithState
         public override string ToString()
         {
             return $"Mighty Gumball, Inc.\n" +
-                $"Inventory: {BallsCount} gumball{( BallsCount != 1 ? "s" : "" )},{QuartersCount} quarter{( QuartersCount != 1 ? "s" : "" )}\n" +
+                $"Inventory: {BallsCount} gumball{( BallsCount != 1 ? "s" : "" )}, {QuartersCount} quarter{( QuartersCount != 1 ? "s" : "" )}\n" +
                 $"Machine is {_context.ToString()}";
         }
 

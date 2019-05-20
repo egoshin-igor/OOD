@@ -147,5 +147,29 @@ namespace GumballMachine.NaiveGumbalMachine
                     break;
             }
         }
+
+        public override string ToString()
+        {
+            return $"Mighty Gumball, Inc.\n" +
+                $"Inventory: {BallsCount} gumball{( BallsCount != 1 ? "s" : "" )}, {QuartersCount} quarter{( QuartersCount != 1 ? "s" : "" )}\n" +
+                $"Machine is {GetStateInfo()}";
+        }
+
+        private string GetStateInfo()
+        {
+            switch ( _currentState )
+            {
+                case GumbalMachineState.SoldOut:
+                    return "sold out";
+                case GumbalMachineState.NoQuarter:
+                    return "waiting for quarter";
+                case GumbalMachineState.HasQuarter:
+                    return "waiting for turn of crank";
+                case GumbalMachineState.Sold:
+                    return "delivering a gumball";
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 }

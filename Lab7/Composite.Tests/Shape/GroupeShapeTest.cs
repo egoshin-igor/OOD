@@ -297,18 +297,20 @@ namespace Composite.Tests.Shape
         }
 
         [Fact]
-        public void GetFillStyle_ChildsWithDifferentStyles_ReturnNull()
+        public void GetFillStyle_ChildsWithDifferentColors_FillStyleWithoutColor()
         {
             // Arrange
             var fillStyle = new BaseStyle( Color.Black );
             GroupShape groupShape = GetGroupShape( 3, lineStyle: null, fillStyle );
-            groupShape.GetShapeAtIndex( 0 ).FillStyle.Color = Color.Blue;
+            IShape shape = groupShape.GetShapeAtIndex( 0 );
+            shape.FillStyle.Color = Color.Blue;
 
             // Act
             IStyle result = groupShape.FillStyle;
 
             // Assert
-            Assert.Null( result );
+            var a = result.Color;
+            Assert.Equal( Color.Empty, result.Color );
         }
 
         [Fact]
