@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Chart.Models;
 using Chart.Models.Harmonics;
 
@@ -9,19 +10,30 @@ namespace Chart.ViewModels
     class HarmonicsSumViewModel
     {
         private HarmonicsSum _harmonicsSum = new HarmonicsSum();
-        private readonly int _pointsCount;
-        private readonly double _stepBetweenPoints;
 
         public event Action OnHarmonicSumChange;
 
-        public BindingList<HarmonicViewModel> HarmonicViewModels { get; } = new BindingList<HarmonicViewModel>();
-        public List<Point> Points => _harmonicsSum.GetPoints( _pointsCount, _stepBetweenPoints );
+        public BindingList<HarmonicViewModel> HarmonicViewModels { get; }
 
-        public HarmonicsSumViewModel( int pointsCount, double stepBetweenPoints )
+        public HarmonicsSumViewModel()
         {
+            HarmonicViewModels = new BindingList<HarmonicViewModel>();
             HarmonicViewModels.ListChanged += OnHarmonicViewModelsChanging;
-            _pointsCount = pointsCount;
-            _stepBetweenPoints = stepBetweenPoints;
+        }
+
+        public List<Point> GetPoints( double start, int count, double step )
+        {
+            var result = new List<Point>();
+
+            for ( int i = 0; i < count; i++ )
+            {
+                double t = start + step * i;
+                double y = _harmonicsSum.GetValueByTime( t );
+
+                result.Add( new Point( t, y ) );
+            }
+
+            return result;
         }
 
         private void OnHarmonicViewModelsChanging( object sender, ListChangedEventArgs e )
@@ -34,6 +46,16 @@ namespace Chart.ViewModels
                     break;
                 case ListChangedType.ItemDeleted:
                     _harmonicsSum.Harmonics.RemoveAt( e.NewIndex );
+                    break;
+                case ListChangedType.ItemChanged:
+                    var changedHarmonicViewModel = HarmonicViewModels[ e.NewIndex ];
+                    _harmonicsSum.Harmonics[ e.NewIndex ] = changedHarmonicViewModel.Harmonic;
+                    break;
+                case ListChangedType.Reset:
+                    _harmonicsSum.Harmonics.Clear();
+                    _harmonicsSum.Harmonics.AddRange( HarmonicViewModels.Select( v => v.Harmonic ) );
+                    break;
+                default:
                     break;
             }
             OnHarmonicSumChange?.Invoke();

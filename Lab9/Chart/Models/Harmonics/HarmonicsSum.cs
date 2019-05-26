@@ -16,20 +16,5 @@ namespace Chart.Models.Harmonics
 
             return result;
         }
-
-        public List<Point> GetPoints( int count, double step )
-        {
-            var result = new List<Point>();
-
-            for ( int i = 0; i < count; i++ )
-            {
-                double t = step * i;
-                double y = GetValueByTime( t );
-
-                result.Add( new Point( t, y ) );
-            }
-
-            return result;
-        }
     }
 }

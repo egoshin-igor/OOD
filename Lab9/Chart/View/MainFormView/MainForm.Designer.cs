@@ -1,4 +1,4 @@
-﻿namespace Chart.View
+﻿namespace Chart.View.MainFormView
 {
     partial class MainForm
     {
@@ -75,7 +75,6 @@
             this.DeleteSelectedButton.TabIndex = 2;
             this.DeleteSelectedButton.Text = "Delete selected";
             this.DeleteSelectedButton.UseVisualStyleBackColor = true;
-            this.DeleteSelectedButton.Click += new System.EventHandler( this.DeleteSelectedButton_Click );
             // 
             // AddNewButton
             // 
@@ -85,7 +84,6 @@
             this.AddNewButton.TabIndex = 1;
             this.AddNewButton.Text = "Add new";
             this.AddNewButton.UseVisualStyleBackColor = true;
-            this.AddNewButton.Click += new System.EventHandler( this.AddNewButton_Click );
             // 
             // HarmonicsList
             // 
@@ -96,7 +94,6 @@
             this.HarmonicsList.Name = "HarmonicsList";
             this.HarmonicsList.Size = new System.Drawing.Size( 261, 116 );
             this.HarmonicsList.TabIndex = 0;
-            this.HarmonicsList.SelectedIndexChanged += new System.EventHandler( this.HarmonicsList_SelectedIndexChanged );
             // 
             // SelectedHarmonicBox
             // 
@@ -130,7 +127,6 @@
             this.PhaseInput.Name = "PhaseInput";
             this.PhaseInput.Size = new System.Drawing.Size( 129, 22 );
             this.PhaseInput.TabIndex = 6;
-            this.PhaseInput.TextChanged += new System.EventHandler( this.PhaseInput_TextChanged );
             // 
             // FrequencyLabel
             // 
@@ -148,7 +144,6 @@
             this.FrequencyInput.Name = "FrequencyInput";
             this.FrequencyInput.Size = new System.Drawing.Size( 129, 22 );
             this.FrequencyInput.TabIndex = 4;
-            this.FrequencyInput.TextChanged += new System.EventHandler( this.FrequencyInput_TextChanged );
             // 
             // CosRadioButton
             // 
@@ -160,7 +155,6 @@
             this.CosRadioButton.TabStop = true;
             this.CosRadioButton.Text = "Cos";
             this.CosRadioButton.UseVisualStyleBackColor = true;
-            this.CosRadioButton.CheckedChanged += new System.EventHandler( this.CosRadioButton_CheckedChanged );
             // 
             // SinRadioButton
             // 
@@ -172,7 +166,6 @@
             this.SinRadioButton.TabStop = true;
             this.SinRadioButton.Text = "Sin";
             this.SinRadioButton.UseVisualStyleBackColor = true;
-            this.SinRadioButton.CheckedChanged += new System.EventHandler( this.SinRadioButton_CheckedChanged );
             // 
             // AmplitudeLabel
             // 
@@ -190,7 +183,6 @@
             this.AmplitudeInput.Name = "AmplitudeInput";
             this.AmplitudeInput.Size = new System.Drawing.Size( 129, 22 );
             this.AmplitudeInput.TabIndex = 0;
-            this.AmplitudeInput.TextChanged += new System.EventHandler( this.AmplitudeInput_TextChanged );
             // 
             // Tabs
             // 
@@ -254,6 +246,8 @@
             this.Controls.Add( this.Tabs );
             this.Controls.Add( this.SelectedHarmonicBox );
             this.Controls.Add( this.HarmonicsListBox );
+            this.MaximumSize = new System.Drawing.Size( 569, 537 );
+            this.MinimumSize = new System.Drawing.Size( 569, 537 );
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.HarmonicsListBox.ResumeLayout( false );

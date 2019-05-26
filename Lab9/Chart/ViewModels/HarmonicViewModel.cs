@@ -23,6 +23,7 @@ namespace Chart.ViewModels
             set
             {
                 Harmonic.Amplitude = value.AsDouble() ?? 0;
+                OnPropertyChanged( "StringRepresentation" );
                 OnPropertyChanged();
             }
         }
@@ -36,6 +37,7 @@ namespace Chart.ViewModels
             set
             {
                 Harmonic.Frequency = value.AsDouble() ?? 0;
+                OnPropertyChanged( "StringRepresentation" );
                 OnPropertyChanged();
             }
         }
@@ -48,6 +50,7 @@ namespace Chart.ViewModels
             set
             {
                 Harmonic.Phase = value.AsDouble() ?? 0;
+                OnPropertyChanged( "StringRepresentation" );
                 OnPropertyChanged();
             }
         }
@@ -76,7 +79,7 @@ namespace Chart.ViewModels
             return Harmonic.GetValueByTime( time );
         }
 
-        public void OnPropertyChanged( [CallerMemberName] string property = "" )
+        private void OnPropertyChanged( [CallerMemberName] string property = "" )
         {
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( property ) );
         }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Chart.Models.Harmonics;
-using Chart.Models.Types;
-using Chart.Utils;
+using Chart.View.CommonPartViews;
 using Chart.ViewModels;
 
 namespace Chart.View
@@ -11,30 +10,32 @@ namespace Chart.View
     {
         public event Action OnOkClick;
 
-        public HarmonicViewModel NewHarmonic { get; private set; }
+        private HarmonicPartView _harmonicPartView;
+
+        public HarmonicViewModel NewHarmonic => _harmonicPartView.Harmonic;
 
         public AddNewHarmonicForm()
         {
-            NewHarmonic = new HarmonicViewModel( new Harmonic() );
             InitializeComponent();
-            InitializeSelectedHarmonicBox();
+            InitializeSelectedHarmonicPartView();
+            HarmonicStringRepresentation.DataBindings
+                .Add( "Text", NewHarmonic, "StringRepresentation", true, DataSourceUpdateMode.OnPropertyChanged );
         }
 
-        private void InitializeSelectedHarmonicBox()
+        private void InitializeSelectedHarmonicPartView()
         {
-            AmplitudeInput.DataBindings.Add( "Text", NewHarmonic, "Amplitude", true, DataSourceUpdateMode.OnPropertyChanged );
-            FrequencyInput.DataBindings.Add( "Text", NewHarmonic, "Frequency", true, DataSourceUpdateMode.OnPropertyChanged );
-            PhaseInput.DataBindings.Add( "Text", NewHarmonic, "Phase", true, DataSourceUpdateMode.OnPropertyChanged );
-            HarmonicStringRepresentation.DataBindings.Add( "Text", NewHarmonic, "StringRepresentation", true, DataSourceUpdateMode.OnPropertyChanged );
+            var selectedHarmonicViews = new HarmonicViews(
+                FrequencyInput,
+                AmplitudeInput,
+                PhaseInput,
+                SinRadioButton,
+                CosRadioButton
+            );
 
-            if ( NewHarmonic.Type == HarmonicType.Cos )
-            {
-                CosRadioButton.Checked = true;
-            }
-            else
-            {
-                SinRadioButton.Checked = true;
-            }
+            HarmonicViewModel newHarmonic = new HarmonicViewModel( new Harmonic() );
+            var harmonicPartViewViewModel = new AlwaysEditableHarmonicPartViewViewModel { SelectedHarmonic = newHarmonic };
+            _harmonicPartView = new HarmonicPartView( selectedHarmonicViews, harmonicPartViewViewModel );
+            _harmonicPartView.UpdateDataBindings();
         }
 
         private void CancelButton_Click( object sender, EventArgs e )
@@ -46,37 +47,6 @@ namespace Chart.View
         {
             OnOkClick?.Invoke();
             Close();
-        }
-
-        private void SinRadioButton_CheckedChanged( object sender, EventArgs e )
-        {
-            if ( SinRadioButton.Focused )
-            {
-                NewHarmonic.Type = HarmonicType.Sin;
-            }
-        }
-
-        private void CosRadioButton_CheckedChanged( object sender, EventArgs e )
-        {
-            if ( CosRadioButton.Focused )
-            {
-                NewHarmonic.Type = HarmonicType.Cos;
-            }
-        }
-
-        private void FrequencyInput_TextChanged( object sender, EventArgs e )
-        {
-            TextBoxUtils.ValidateDoubleInput( FrequencyInput );
-        }
-
-        private void AmplitudeInput_TextChanged( object sender, EventArgs e )
-        {
-            TextBoxUtils.ValidateDoubleInput( AmplitudeInput );
-        }
-
-        private void PhaseInput_TextChanged( object sender, EventArgs e )
-        {
-            TextBoxUtils.ValidateDoubleInput( PhaseInput );
         }
     }
 }

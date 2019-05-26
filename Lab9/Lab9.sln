@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chart", "Chart\Chart.csproj", "{AEA38CFB-2E0F-476F-8D91-CF54DA45E6F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chart.Tests", "Chart.Tests\Chart.Tests.csproj", "{7C8D2716-9EB9-4DE2-AC72-C6094807093B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{AEA38CFB-2E0F-476F-8D91-CF54DA45E6F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEA38CFB-2E0F-476F-8D91-CF54DA45E6F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEA38CFB-2E0F-476F-8D91-CF54DA45E6F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8D2716-9EB9-4DE2-AC72-C6094807093B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8D2716-9EB9-4DE2-AC72-C6094807093B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8D2716-9EB9-4DE2-AC72-C6094807093B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8D2716-9EB9-4DE2-AC72-C6094807093B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

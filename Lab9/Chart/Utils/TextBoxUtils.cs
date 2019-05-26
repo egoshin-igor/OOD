@@ -7,7 +7,7 @@ namespace Chart.Utils
     {
         public static void ValidateDoubleInput( TextBox input )
         {
-            const string defaultLabelValue = "0";
+            const string defaultLabelValue = "";
 
             if ( string.IsNullOrEmpty( input.Text ) )
             {
@@ -15,7 +15,7 @@ namespace Chart.Utils
             }
 
             double? doubleValue = input.Text.AsDouble();
-            if ( doubleValue != null )
+            if ( doubleValue != null || input.Text == defaultLabelValue )
             {
                 input.BackColor = Color.White;
             }

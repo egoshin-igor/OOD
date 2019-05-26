@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Chart.View;
+using Chart.View.MainFormView;
 using Chart.ViewModels;
 
 namespace Chart
